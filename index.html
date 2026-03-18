@@ -4,957 +4,636 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>סימולטור אימון תקשורת</title>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1E3A8A;
-            --success-color: #10B981;
-            --bg-color: #F3F4F6;
-            --danger-color: #EF4444;
-            --warning-color: #FCD34D;
-            --text-color: #1F2937;
-            --white: #FFFFFF;
-            --border-radius: 8px;
+            --bg-color: #f8f9fa;
+            --primary-color: #003366;
+            --secondary-color: #28a745;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --warning-color: #dc3545;
+            --hover-color: #00509e;
         }
 
         body {
-            font-family: 'Heebo', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
         }
 
-        .hidden { display: none !important; }
-        
-        header {
-            position: sticky;
-            top: 0;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 15px 20px;
-            font-weight: 600;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .level-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            transition: transform 0.3s;
-        }
-
-        .pulse { animation: pulseAnim 0.5s ease-in-out 2; }
-        
-        @keyframes pulseAnim {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); background: var(--success-color); }
-            100% { transform: scale(1); }
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
         }
 
         .screen {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-            flex: 1;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .hard-mode .screen {
+            animation: suddenAppear 0.1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes suddenAppear {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         h1, h2, h3 {
             color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 20px;
+            margin-top: 0;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #4B5563;
-            margin-bottom: 30px;
-        }
-
-        .btn {
+        .score-board {
+            position: absolute;
+            top: 20px;
+            left: 20px;
             background-color: var(--primary-color);
-            color: var(--white);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: var(--border-radius);
+            padding: 12px 20px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: 600;
-            transition: opacity 0.2s, transform 0.1s;
-            display: block;
-            margin: 20px auto;
-            width: 100%;
-            max-width: 300px;
+            margin: 5px;
+            transition: background-color 0.3s;
         }
 
-        .btn:hover:not(:disabled) { opacity: 0.9; }
-        .btn:active:not(:disabled) { transform: translateY(2px); }
-        .btn:disabled { background-color: #9CA3AF; cursor: not-allowed; }
+        button:hover {
+            background-color: var(--hover-color);
+        }
 
-        .btn-secondary {
-            background-color: transparent;
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-large {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 20px;
+            font-size: 18px;
+            text-align: right;
             border: 2px solid var(--primary-color);
+            background-color: white;
             color: var(--primary-color);
         }
 
-        /* מסך 1: זירות */
-        .tags-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 30px;
+        .btn-large:hover, .btn-large.selected {
+            background-color: var(--primary-color);
+            color: white;
         }
 
-        .tag-btn {
-            background: var(--white);
-            border: 2px solid #D1D5DB;
-            padding: 10px 20px;
-            border-radius: 25px;
+        .checkbox-group label {
+            display: block;
+            background: #f1f3f5;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s;
-            color: var(--text-color);
+            border: 1px solid var(--border-color);
         }
 
-        .tag-btn.selected {
-            background: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
+        .checkbox-group input {
+            margin-left: 10px;
         }
 
-        /* מסך 2: קושי */
-        .difficulty-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .difficulty-grid { grid-template-columns: 1fr; }
-        }
-
-        .diff-card {
-            background: var(--white);
-            border: 2px solid #E5E7EB;
-            border-radius: var(--border-radius);
-            padding: 30px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .diff-card:hover { border-color: var(--primary-color); transform: translateY(-3px); }
-        .diff-card.selected { border-color: var(--primary-color); background: #EFF6FF; }
-        .diff-card h3 { margin-top: 0; font-size: 24px; }
-        
-        /* מסך משחק: תרחיש */
         .dialog-bubble {
-            background: var(--white);
-            border-radius: var(--border-radius);
+            background-color: #e3f2fd;
             padding: 20px;
-            position: relative;
-            margin-bottom: 30px;
-            border-right: 5px solid var(--primary-color);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            border-bottom-right-radius: 0;
             font-size: 18px;
-            line-height: 1.5;
+            margin-bottom: 25px;
+            position: relative;
         }
 
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        @media (max-width: 600px) {
-            .info-grid { grid-template-columns: 1fr; }
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .info-btn {
-            background: #E5E7EB;
-            color: var(--text-color);
-            border: none;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.2s;
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
         }
 
         .info-btn.revealed {
-            background: var(--primary-color);
-            color: var(--white);
-            cursor: default;
+            background-color: #e9ecef;
+            color: #495057;
+            border-color: #ced4da;
         }
 
-        .info-content {
-            background: var(--white);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-top: 10px;
-            font-size: 15px;
-            border: 1px solid #E5E7EB;
-        }
-/* שלב אבחון */
-        .diagnosis-card {
-            background: var(--white);
-            padding: 20px;
-            border-radius: var(--border-radius);
+        .radio-group {
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        
-        .radio-group { margin: 15px 0; }
-        
-        .radio-label {
+
+        .radio-group label {
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             cursor: pointer;
-            line-height: 1.5;
-            padding: 10px;
-            border: 1px solid #E5E7EB;
-            border-radius: var(--border-radius);
-            transition: background 0.2s;
         }
-        
-        .radio-label:hover { background: #F9FAFB; }
-        .radio-label input { margin-left: 10px; }
-        
-        .text-field {
+
+        textarea {
             width: 100%;
-            min-height: 80px;
-            margin-top: 10px;
-            padding: 12px;
-            box-sizing: border-box;
-            border: 1px solid #D1D5DB;
-            border-radius: 4px;
-            font-family: inherit;
-            resize: vertical;
-            font-size: 16px;
-        }
-        
-        .text-field:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2);
-        }
-        
-        .expert-analysis {
-            background: #D1FAE5;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-top: 20px;
-            border: 1px solid var(--success-color);
-        }
-        
-        .expert-analysis h4 { color: #065F46; margin-top: 0; }
-        .expert-analysis p { margin-bottom: 10px; }
-        
-        /* שלב תגובה */
-        .hint-box {
-            background: #DBEAFE;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            border: 1px solid #3B82F6;
-            color: #1E3A8A;
-        }
-        
-        .timer {
-            font-size: 28px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-            color: var(--text-color);
-            background: var(--white);
+            height: 100px;
             padding: 10px;
-            border-radius: var(--border-radius);
-            border: 2px solid #E5E7EB;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 15px;
         }
-        
-        .timer.danger {
-            color: var(--danger-color);
-            border-color: var(--danger-color);
-            animation: shake 0.5s infinite;
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #ffeeba;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            color: #856404;
+            font-weight: bold;
         }
-        
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
+
+        .btn-pause {
+            background-color: var(--warning-color);
         }
-        
-        /* שלב הערכה */
-        .gold-standard {
-            background: #FEF3C7;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 30px;
-            border: 1px solid #F59E0B;
-            font-style: italic;
-            font-size: 18px;
-            line-height: 1.6;
-            color: #92400E;
+
+        .btn-pause:hover {
+            background-color: #c82333;
         }
-        
-        .self-eval-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        @media (max-width: 600px) {
-            .self-eval-grid { grid-template-columns: 1fr; }
-        }
-        
-        .eval-card {
-            border: 2px solid #E5E7EB;
-            border-radius: var(--border-radius);
-            padding: 20px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--white);
-        }
-        
-        .eval-card:hover { transform: translateY(-3px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .eval-card.danger:hover { border-color: var(--danger-color); }
-        .eval-card.warning:hover { border-color: #F59E0B; }
-        .eval-card.success:hover { border-color: var(--success-color); }
-        
-        .eval-card h4 { margin: 0 0 10px 0; font-size: 18px; }
-        .eval-card p { margin: 0; font-size: 14px; color: #4B5563; }
-        
-        /* Utilities */
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .feedback-msg {
+
+        .feedback {
             padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
         }
-        
-        .feedback-error { background: #FEE2E2; color: #991B1B; border: 1px solid #F87171; }
-        .feedback-success { background: #D1FAE5; color: #065F46; border: 1px solid #34D399; }
-        
-        /* סיום המשחק */
-        .summary-card {
-            background: var(--white);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        .feedback.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-        
-        .points-display {
-            font-size: 48px;
-            color: var(--primary-color);
-            font-weight: bold;
+
+        .feedback.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .gold-standard {
+            background-color: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
             margin: 20px 0;
         }
 
+        .hint {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div>סימולטור אימון תקשורת</div>
-        <div class="level-badge" id="headerScore">⭐ 0 נקודות | מתחיל מודע</div>
-    </header>
+    <div class="container" id="app">
+        <div class="score-board" id="score-display">ניקוד: 0</div>
 
-    <main id="screen1" class="screen">
-        <h1>באיזה זירות אתה רוצה לתרגל תקשורת מאמנת?</h1>
-        <p class="subtitle">בחר את התחומים שבהם אתה נפגש עם אנשים ורוצה לשפר את תקשורתך. המשחק יתאים לך תרחישים בהתאם.</p>
-        
-        <div class="tags-grid" id="tagsContainer">
+        <div id="screen-1" class="screen active">
+            <h2>באילו מערכות יחסים תרצה לתרגל תקשורת?</h2>
+            <p>בחר את סוגי הקשרים שבהם תרצה לשפר את התקשורת שלך. המשחק יתאים לך תרחישים בהתאם.</p>
+            <div class="checkbox-group" id="tags-selection">
+                <label><input type="checkbox" value="family"> משפחה (הורים/ילדים/אחים)</label>
+                <label><input type="checkbox" value="authority"> סמכות (מורה/מנהל/מדריך)</label>
+                <label><input type="checkbox" value="peers"> שווים (חברים/קולגות/שותפים)</label>
+                <label><input type="checkbox" value="romance"> זוגיות</label>
             </div>
-        
-        <button class="btn" id="btnToScreen2" disabled>המשך לבחירת רמת קושי ➜</button>
-    </main>
-<main id="screen2" class="screen hidden">
-        <h1>בחר רמת אימון</h1>
-        <p class="subtitle">התאם את רמת האתגר לניסיון שלך</p>
-        
-        <div class="difficulty-grid">
-            <div class="diff-card" id="btnEasy">
-                <h3>🌱 רמה קלה</h3>
-                <p>עם רמזים מנחים לכל שלב</p>
-            </div>
-            <div class="diff-card" id="btnHard">
-                <h3>🔥 רמה קשה</h3>
-                <p>ללא רמזים, עם לחץ זמן מוגבל</p>
-            </div>
+            <button onclick="goToDifficulty()">המשך לבחירת רמת קושי ➜</button>
         </div>
-    </main>
 
-    <main id="screen3" class="screen hidden">
-        <h2 id="scenarioTitle">תרחיש תקשורת</h2>
-        <div class="dialog-bubble" id="scenarioMessage">
-            </div>
-        
-        <h3>גלה מידע על הסיטואציה</h3>
-        <p style="text-align: center; color: #4B5563; margin-bottom: 20px;">לחץ על כל הכפתורים כדי להבין את ההקשר המלא (+5 נקודות)</p>
-        
-        <div class="info-grid">
-            <div>
-                <button class="info-btn" id="infoBtn1">1️⃣ מי האדם הזה?</button>
-                <div class="info-content hidden" id="infoContent1"></div>
-            </div>
-            <div>
-                <button class="info-btn" id="infoBtn2">2️⃣ מה הקשר בינינו?</button>
-                <div class="info-content hidden" id="infoContent2"></div>
-            </div>
-            <div>
-                <button class="info-btn" id="infoBtn3">3️⃣ מה קרה רגע לפני?</button>
-                <div class="info-content hidden" id="infoContent3"></div>
-            </div>
-            <div>
-                <button class="info-btn" id="infoBtn4">4️⃣ מה הציפייה הלגיטימית?</button>
-                <div class="info-content hidden" id="infoContent4"></div>
-            </div>
+        <div id="screen-2" class="screen">
+            <h2>בחר רמת אתגר</h2>
+            <button class="btn-large" onclick="startGame('easy')">
+                <strong>🌱 רמה קלה (Easy Mode)</strong><br>
+                <small>מצבים יומיומיים עם רמזים מנחים לכל שלב, ללא מגבלת זמן.</small>
+            </button>
+            <button class="btn-large" onclick="startGame('hard')">
+                <strong>🔥 רמה קשה (Hard Mode)</strong><br>
+                <small>מצבים מורכבים תחת לחץ זמן, ללא רמזים.</small>
+            </button>
         </div>
-        
-        <button class="btn" id="btnToDiagnosis" disabled>המשך לאבחון ➜</button>
-    </main>
 
-    <main id="screen4" class="screen hidden">
-        <h2>🎯 אבחן את התפקיד במשולש הדרמה</h2>
-        
-        <div class="diagnosis-card">
-            <h3>1. מהו התפקיד של הדמות במשולש הדרמה?</h3>
-            <div class="radio-group" id="roleSelection">
-                <label class="radio-label">
-                    <input type="radio" name="role" value="victim">
-                    <strong>קורבן (ילד מותאם):</strong> "אני לא יכול" - מחסיר את היכולת לפתור בעיות. מניע: להימנע מאחריות.
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="role" value="rescuer">
-                    <strong>מציל (הורה מזין):</strong> "אני אעשה בשבילך" - מניע: להרגיש נחוץ ולשמור על עליונות.
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="role" value="persecutor">
-                    <strong>רודף/תוקפן (הורה ביקורתי):</strong> "אתה אשם" - מניע: לפרוק תסכול ולהימנע מלהרגיש פגיע.
-                </label>
+        <div id="screen-3" class="screen">
+            <h2>גילוי מידע</h2>
+            <div class="dialog-bubble" id="scenario-message"></div>
+            
+            <p>לחץ על כל הכפתורים לחשיפת המידע המלא (5 נק'):</p>
+            <div class="info-grid">
+                <button class="info-btn" id="btn-info-identity" onclick="revealInfo('identity', this)">מי האדם הזה?</button>
+                <button class="info-btn" id="btn-info-relationship" onclick="revealInfo('relationship', this)">מה הקשר בינינו?</button>
+                <button class="info-btn" id="btn-info-context" onclick="revealInfo('context', this)">מה קרה רגע לפני?</button>
+                <button class="info-btn" id="btn-info-expectation" onclick="revealInfo('expectation', this)">הגדרת התפקיד והציפייה</button>
             </div>
-            <div id="roleFeedback" class="feedback-msg hidden"></div>
+            <div id="info-display" class="feedback success" style="display:none; margin-bottom: 20px;"></div>
             
-            <h3>2. מה הדמות מחסירה?</h3>
-            <textarea class="text-field" id="diagLacking" placeholder="תאר ממה הדמות מתעלמת או מכחישה..."></textarea>
+            <button id="btn-to-diagnosis" disabled onclick="goToDiagnosis()">המשך לאבחון המצב ➜</button>
+        </div>
+
+        <div id="screen-4" class="screen">
+            <h2>🎯 אבחן את המצב</h2>
             
-            <h3>3. מה המניע של הדמות?</h3>
-            <textarea class="text-field" id="diagMotive" placeholder="תאר מה באמת מניע את הדמות..."></textarea>
-            
-            <button class="btn" id="btnSubmitDiagnosis">שלח אבחון (+15 נקודות)</button>
-            
-            <div class="expert-analysis hidden" id="expertAnalysisBox">
-                <h4>ניתוח המומחה</h4>
-                <p id="expertAnalysisText"></p>
-                <hr style="border: 0; border-top: 1px solid #34D399; margin: 15px 0;">
-                <p><strong>קרא את ניתוח המומחה והשווה אותו לתשובות שכתבת. האם זיהית נכון את ה"החסרה" ואת המניע?</strong></p>
-                <button class="btn" id="btnToResponse">הבנתי את הניתוח, המשך לתגובה ➜</button>
+            <div class="radio-group">
+                <p><strong>1. מהו התפקיד שהדמות לוקחת על עצמה כרגע?</strong></p>
+                <label><input type="radio" name="role" value="victim"> קורבן (חסר אונים, מחפש הצלה)</label>
+                <label><input type="radio" name="role" value="rescuer"> מציל (פותר לאחרים במקום לאפשר התמודדות)</label>
+                <label><input type="radio" name="role" value="persecutor"> רודף (מאשים או תוקף במקום לפתור)</label>
             </div>
-        </div>
-    </main>
 
-    <main id="screen5" class="screen hidden">
-        <h2>💬 כתוב את התגובה שלך (כמאמן)</h2>
-        
-        <div class="hint-box hidden" id="hintBox">
-            <strong>💡 רמז מנחה:</strong> <span id="hintText"></span>
-        </div>
-        
-        <div class="timer hidden" id="timerDisplay">01:30</div>
-        
-        <textarea class="text-field" id="userResponseText" style="min-height: 150px; font-size: 18px;" placeholder="הקלד את תגובתך כאן... זכור להגיב ממצב 'בוגר' (Adult)."></textarea>
-        
-        <button class="btn" id="btnSubmitResponse">שלח תגובה</button>
-    </main>
-
-    <main id="screen6" class="screen hidden">
-        <h2>📊 הערכת התגובה שלך</h2>
-        
-        <div class="diagnosis-card">
-            <h3>תגובת הזהב (Gold Standard)</h3>
-            <div class="gold-standard" id="goldStandardText"></div>
-            
-            <h3>התגובה שלך:</h3>
-            <div class="dialog-bubble" style="background: #F3F4F6; border-right-color: #9CA3AF;" id="userResponseCopy"></div>
-            
-            <h3>דירוג עצמי מובנה</h3>
-            <p style="text-align: center; margin-bottom: 20px;">קרא את תגובת הזהב והשווה אותה לתגובתך. דרג את עצמך בכנות:</p>
-            
-            <div class="self-eval-grid">
-                <div class="eval-card danger" onclick="submitEvaluation(0)">
-                    <h4>🔴 רחוק מהיעד (0 נק')</h4>
-                    <p>"התגובה שלי הייתה בדרמה - הצלתי, תקפתי, או התמסכנתי"</p>
-                </div>
-                <div class="eval-card warning" onclick="submitEvaluation(10)">
-                    <h4>🟡 בכיוון הנכון (10 נק')</h4>
-                    <p>"זיהיתי את הצורך אך לא דייקתי את הניסוח כמאמן"</p>
-                </div>
-                <div class="eval-card success" onclick="submitEvaluation(20)">
-                    <h4>🟢 בול בפוני (20 נק')</h4>
-                    <p>"פעלתי כמאמן מלא - שאלתי שאלות מעצימות ולא נתתי פתרון"</p>
-                </div>
+            <div class="radio-group">
+                <p><strong>2. מהי ההחסרה? (Discounting)</strong><br>
+                <small>ממה האדם מתעלם כדי לא לפתור את הבעיה?</small></p>
+                <textarea id="discounting-input" placeholder="הקלד את תשובתך כאן..."></textarea>
             </div>
-        </div>
-    </main>
 
-    <main id="screen7" class="screen hidden">
-        <h2>🎉 סיכום התרחיש</h2>
-        
-        <div class="summary-card">
-            <h3>הרווחת בתרחיש זה:</h3>
-            <div class="points-display" id="scenarioPoints">+0</div>
-            
-            <h4 style="color: #4B5563;">פירוט:</h4>
-            <ul style="list-style: none; padding: 0; line-height: 1.8; color: #4B5563;">
-                <li>גילוי מידע: <span id="summaryInfoPts">0</span>/5</li>
-                <li>אבחון תפקיד: <span id="summaryDiagPts">0</span>/15</li>
-                <li>מילות מפתח בתגובה: <span id="summaryKeywordPts">0</span>/10</li>
-                <li>דירוג עצמי: <span id="summaryEvalPts">0</span>/20</li>
-            </ul>
-            
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #E5E7EB;">
-            
-            <button class="btn" id="btnRestartSame">🔄 תרחיש חדש באותה רמה</button>
-            <button class="btn btn-secondary" id="btnRestartFull">🔧 שנה זירות וקושי</button>
+            <div class="radio-group">
+                <p><strong>3. מהו המניע הסמוי של הדמות?</strong></p>
+                <label><input type="radio" name="motive" value="persecutor_motive"> כדי להרגיש בשליטה ולפרוק תסכול (רודף)</label>
+                <label><input type="radio" name="motive" value="victim_motive"> כדי שמישהו אחר ייקח אחריות ויעשה במקומי (קורבן)</label>
+                <label><input type="radio" name="motive" value="rescuer_motive"> כדי להרגיש נחוץ, מועיל ועליון (מציל)</label>
+            </div>
+
+            <button onclick="checkDiagnosis()">בדוק אבחון</button>
+            <div id="diagnosis-feedback" class="feedback"></div>
+            <button id="btn-to-response" style="display:none;" onclick="goToResponse()">המשך לתגובה ➜</button>
         </div>
-    </main>
+
+        <div id="screen-5" class="screen">
+            <h2>💬 כתוב את התגובה שלך</h2>
+            <p>הגב מתוך "הקול השקול והמתבונן" (מצב הבוגר).</p>
+            
+            <div id="timer-ui" class="timer-container" style="display:none;">
+                <span>⏳ זמן נותר: <span id="time-left">60</span> שניות</span>
+                <button id="btn-breathe" class="btn-pause" onclick="useBreathe()">נשימה (השהיה חד-פעמית)</button>
+            </div>
+
+            <div id="hint-ui" class="hint" style="display:none;"></div>
+
+            <textarea id="user-response" placeholder="הקלד את תגובתך..."></textarea>
+            <button onclick="evaluateResponse()">שלח תגובה</button>
+        </div>
+
+        <div id="screen-6" class="screen">
+            <h2>סיכום והערכה</h2>
+            <div id="heuristics-feedback" class="feedback success" style="display:block;"></div>
+            
+            <div class="gold-standard">
+                <strong>תגובת הזהב (Gold Standard):</strong>
+                <p id="gold-standard-text"></p>
+            </div>
+
+            <h3>הערכה עצמית</h3>
+            <p>השווה את התגובה שלך לתגובת הזהב. האם התגובה שלך עזרה לצד השני לקחת אחריות או החלישה אותו?</p>
+            <button class="btn-large" onclick="finishScenario(0)">🔴 רחוק מהיעד - התגובה שלי החלישה או תקפה (0 נק')</button>
+            <button class="btn-large" onclick="finishScenario(10)">🟡 בכיוון הנכון - זיהיתי את הבעיה אך הניסוח יכול להשתפר (10 נק')</button>
+            <button class="btn-large" onclick="finishScenario(20)">🟢 בול בפוני - התגובה עזרה לצד השני לחשוב ולקחת אחריות (20 נק')</button>
+        </div>
+
+    </div>
 
     <script>
-        // --- מסד נתונים - תרחישים ---
-        const scenariosDB = [
+        const scenariosDb = [
             {
                 id: "scenario_001",
-                tag: "parent",
+                difficulty: "easy",
+                tag: ["family"],
                 character: {
                     name: "גיא",
                     identity: "הבן שלך, בן 14",
-                    relationship: "זהו בנך, גיא. הוא תלמיד טוב בדרך כלל, אך לפעמים מתמודד עם חוסר ביטחון",
-                    context: "גיא חזר הביתה עם מבחן במתמטיקה שקיבל 65, וראה שחברים שלו קיבלו 90+",
-                    expectation: "כהורה, אתה אמור לעזור לו לפתח מיומנויות פתרון בעיות עצמאיות, לא לפתור עבורו"
+                    relationship: "זהו בנך, בדרך כלל עצמאי אך כרגע חסר ביטחון",
+                    context: "גיא קיבל 65 במבחן, חבריו קיבלו 90+",
+                    expectation: "כהורה, הציפייה היא לעזור לו לפתח עצמאות (ולא לפתור עבורו את הבעיה)"
                 },
-                message: "אבא, אני לא מבין את השיעור הזה. אני בטוח שאני פשוט טיפש במתמטיקה...",
+                message: "אני לא מבין כלום, אני פשוט טיפש במתמטיקה...",
                 diagnosis: {
                     role: "victim",
-                    expertAnalysis: "גיא נמצא בתפקיד הקורבן במשולש הדרמה. הביטוי 'אני בטוח שאני פשוט טיפש' הוא טיפוסי לילד מותאם המרגיש חסר אונים. הוא מחפש הצלה חיצונית במקום לקחת אחריות על הלמידה שלו. המניע העמוק הוא פחד מכישלון - אם הוא לא ינסה באמת, הוא יוכל להאשים את 'הטיפשות' שלו ולא את המאמץ."
+                    motive: "victim_motive",
+                    expertAnalysis: "גיא לוקח תפקיד של קורבן. הוא מתעלם מיכולותיו (Discounting) מתוך מניע להשיג 'הצלה' ולהימנע מאחריות."
                 },
-                hints: { easy: "במקום להציע לגיא פתרון או להרגיע אותו בצורה כללית ('אתה לא טיפש'), נסה לשאול אותו מה הוא כבר ניסה לעשות כדי להבין את החומר. זה יחזיר לו את תחושת המסוגלות." },
-                goldStandard: "גיא, אני רואה שאתה מתוסכל. ספר לי - מה כבר ניסית לעשות כדי להבין את החומר? יש נושא ספציפי שקשה לך בו?"
+                hints: {
+                    easy: "רמז: במקום להרגיע ('אתה לא טיפש'), שאל אותו מה הוא כבר ניסה לעשות כדי להחזיר לו את תחושת השליטה."
+                },
+                goldStandard: "אני מבין שזה מתסכל. מה כבר ניסית לעשות כדי להבין את החומר?"
             },
             {
                 id: "scenario_002",
-                tag: "manager",
+                difficulty: "hard",
+                tag: ["peers", "authority"],
                 character: {
-                    name: "רונית",
-                    identity: "עובדת בצוות שלך",
-                    relationship: "רונית עובדת ותיקה, נוטה לקחת על עצמה יותר מדי משימות ולהתלונן על עומס.",
-                    context: "רונית מגיעה אלייך למשרד בסוף היום כשהיא נראית מותשת, רגע לפני דד-ליין חשוב של הפרויקט.",
-                    expectation: "כמנהל, תפקידך לנתב את העבודה ולעזור לה לתעדף, אך לא לבצע את העבודה במקומה."
+                    name: "דן",
+                    identity: "קולגה בצוות שלך",
+                    relationship: "עובדים יחד על פרויקט משותף באותו מעמד",
+                    context: "המנהל העיר על עיכוב בפרויקט. דן מגיע אליך בזעם.",
+                    expectation: "שותפות שוויונית, חלוקת עבודה ברורה ולקיחת אחריות משותפת."
                 },
-                message: "אני קורסת פה! אי אפשר לעמוד ביעדים האלה, כולם רק זורקים עליי משימות ואף אחד לא עוזר לי. אני אשאר כאן כל הלילה וזהו.",
+                message: "בגללך אנחנו מאחרים! אתה אף פעם לא מסיים את החלק שלך בזמן, אני תמיד צריך לחפות עליך!",
                 diagnosis: {
-                    role: "victim",
-                    expertAnalysis: "רונית מציגה את עצמה כקורבן של המערכת ('זורקים עליי', 'אי אפשר'). היא מחסירה את היכולת שלה להציב גבולות או לבקש סדרי עדיפויות. המניע שלה הוא לקבל הכרה על הקורבן שהיא מקריבה, ואולי גם לגרום לך (המנהל) להרגיש אשמה ולהציל אותה על ידי לקיחת משימות ממנה."
+                    role: "persecutor",
+                    motive: "persecutor_motive",
+                    expertAnalysis: "דן לוקח תפקיד של רודף. הוא מתעלם מחלקו בעיכוב ומאשים אותך כדי לפרוק תסכול ולהרגיש בשליטה."
                 },
-                hints: { easy: "הימנע מלהגיד 'אני אקח חלק מהמשימות' (מציל) או 'את צריכה לעבוד יותר מהר' (רודף). שאל אותה על תעדוף והחזר אליה את השליטה." },
-                goldStandard: "רונית, נשמע שאת באמת בעומס כבד. בואי נסתכל על רשימת המשימות שלך יחד - מתוך הכל, מה לדעתך הדבר היחיד שחייב לקרות היום, ומה יכול לחכות למחר?"
+                hints: {
+                    easy: "רמז: אל תתגונן או תתקוף בחזרה. שקף את הבעיה המקצועית והזמן אותו לפתרון משותף."
+                },
+                goldStandard: "אני רואה שאתה כועס על העיכוב. בוא נסתכל על לוח הזמנים ונראה איך אנחנו מחלקים את המשימות שנותרו כדי להספיק."
             },
             {
                 id: "scenario_003",
-                tag: "spouse",
+                difficulty: "easy",
+                tag: ["romance"],
                 character: {
-                    name: "דנה / דני",
-                    identity: "בן/בת הזוג שלך",
-                    relationship: "זוגיות ארוכת שנים, יש נטייה לחיכוכים סביב חלוקת מטלות הבית.",
-                    context: "חזרת הרגע מהעבודה. הבית מבולגן ויש כלים בכיור. בן/בת הזוג יושב/ת בסלון בטלפון.",
-                    expectation: "שותפות שוויונית ותקשורת מכבדת ללא האשמות הדדיות."
+                    name: "בן/בת הזוג",
+                    identity: "בן/בת זוגך",
+                    relationship: "מערכת יחסים זוגית",
+                    context: "חזרתם הביתה אחרי יום עבודה ארוך. הבית מבולגן.",
+                    expectation: "חלוקה הוגנת בנטל ובתחזוקת הבית."
                 },
-                message: "תמיד אני זה שמנקה את הבית הזה! אתה אף פעם לא שם לב לכלום, חי פה כמו במלון. נמאס לי להיות המשרתת של הבית הזה.",
+                message: "תראה איזה בלאגן פה. עזוב, אני כבר אנקה הכל לבד, כמו תמיד. שבו, תנוחו לכם.",
                 diagnosis: {
-                    role: "persecutor",
-                    expertAnalysis: "בן/בת הזוג בתפקיד הרודף. השימוש במילים מוחלטות ('תמיד', 'אף פעם') והטלת האשמה ישירה ('חי פה כמו במלון') אופייניים. היא מחסירה את היכולת לבקש עזרה בצורה ישירה וללא תוקפנות. המניע הוא לפרוק תסכול ולהימנע מלהרגיש חוסר אונים, על ידי הקטנת האחר."
+                    role: "rescuer", 
+                    motive: "rescuer_motive",
+                    expertAnalysis: "תפקיד של מציל (ההופך לקורבן/רודף בהמשך). התעלמות מהיכולת לבקש עזרה בצורה ישירה מתוך רצון להרגיש עליונות וקורבנות."
                 },
-                hints: { easy: "אל תיגרר למגננה ('אני כן עוזר!') או להתקפת נגד. הראה שאתה שומע את התסכול, אך הישאר ענייני ובוגר (Adult) ושאל על הפתרון הרצוי." },
-                goldStandard: "אני שומע שאת ממש מתוסכלת מחלוקת המטלות כרגע. איזו חלוקה תיראה לך הוגנת יותר כדי ששנינו נרגיש בנוח?"
-            },
-            {
-                id: "scenario_004",
-                tag: "general",
-                character: {
-                    name: "יוסי",
-                    identity: "חבר לעבודה / מכר",
-                    relationship: "קשר יומיומי שטחי, יוסי מרבה להתייעץ איתך על בעיות אישיות.",
-                    context: "יוסי מספר לך בפעם העשירית על בעיה שיש לו עם לקוח בעייתי, אך תמיד פוסל את ההצעות שלך.",
-                    expectation: "קשר קולגיאלי, הקשבה אך לא לקיחת אחריות על הבעיות שלו."
+                hints: {
+                    easy: "רמז: הימנע מלהרגיש אשם או להיכנס למגננה. שאל איך אפשר לחלק את העבודה עכשיו."
                 },
-                message: "אני לא יודע מה לעשות עם הלקוח הזה. ניסיתי הכל. אני פשוט לא בנוי לעבודה הזו, אני אעזוב וזהו.",
-                diagnosis: {
-                    role: "victim",
-                    expertAnalysis: "יוסי משחק במשחק 'כן, אבל...' מתחום ניתוח העסקאות (TA). הוא מציג עצמו כקורבן חסר אונים כדי למשוך אותך לתפקיד המציל, רק כדי לפסול את העצות שלך ולהוכיח שהבעיה בלתי פתירה (כדי להימנע מפעולה אמיתית)."
-                },
-                hints: { easy: "הפסק להציע פתרונות (לצאת מתפקיד המציל). החזר לו את האחריות למציאת הפתרון." },
-                goldStandard: "זה באמת מצב מתסכל. אחרי כל מה שניסית עד עכשיו, מה נראה לך הצעד הבא שהכי כדאי לעשות?"
+                goldStandard: "אני שומע שאת/ה עמוס/ה. איך תרצה/י שנחלק את סידור הבית עכשיו כדי שנסיים מהר?"
             }
         ];
-// --- משתני מערכת ---
+
+        let totalScore = 0;
+        let currentScenario = null;
         let selectedTags = [];
         let difficulty = 'easy';
-        let currentScenario = null;
-        let score = parseInt(localStorage.getItem('commSimScore')) || 0;
-        let currentInfoDiscovered = 0;
+        let infoRevealedCount = 0;
         let diagnosisAttempts = 0;
+        
         let timerInterval;
-        let timeLeft = 90;
-        let currentScenarioPoints = 0;
-        let summaryDetails = { info: 0, diag: 0, keyword: 0, eval: 0 };
+        let timeLeft = 60;
+        let pauseUsed = false;
 
-        // --- אתחול והגדרות ---
-        const tagsList = [
-            { id: "parent", label: "הורות" },
-            { id: "spouse", label: "זוגיות" },
-            { id: "business_owner", label: "ניהול עסק" },
-            { id: "employee", label: "עובד/ת במקום עבודה" },
-            { id: "manager", label: "מנהל/ת" },
-            { id: "client_facing", label: "עבודה עם לקוחות" },
-            { id: "friendship", label: "חברות קרובה" },
-            { id: "extended_family", label: "משפחה מורחבת" },
-            { id: "team_member", label: "צוות ספורט/התנדבות" },
-            { id: "educator", label: "מורה/מדריך" },
-            { id: "student", label: "סטודנט/תלמיד" },
-            { id: "neighbor", label: "שכנות" },
-            { id: "religious_community", label: "קהילה דתית" },
-            { id: "business_partner", label: "שותפות עסקית" },
-            { id: "authority_figure", label: "יחסי רשות" }
-        ];
-
-        function initApp() {
-            updateScoreDisplay();
-            renderTags();
-            setupEventListeners();
+        function updateScore(points) {
+            totalScore += points;
+            document.getElementById('score-display').innerText = `ניקוד: ${totalScore}`;
         }
 
-        function renderTags() {
-            const container = document.getElementById('tagsContainer');
-            container.innerHTML = '';
-            tagsList.forEach(tag => {
-                const btn = document.createElement('button');
-                btn.className = 'tag-btn';
-                btn.innerText = tag.label;
-                btn.onclick = () => toggleTag(tag.id, btn);
-                container.appendChild(btn);
-            });
-        }
-
-        function toggleTag(tagId, btnElement) {
-            const index = selectedTags.indexOf(tagId);
-            if (index > -1) {
-                selectedTags.splice(index, 1);
-                btnElement.classList.remove('selected');
-            } else {
-                selectedTags.push(tagId);
-                btnElement.classList.add('selected');
-            }
-            document.getElementById('btnToScreen2').disabled = selectedTags.length === 0;
-        }
-
-        // --- מעברי מסכים ---
         function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            const screen = document.getElementById(screenId);
-            screen.classList.remove('hidden');
-            if (difficulty === 'easy' || screenId === 'screen1' || screenId === 'screen2' || screenId === 'screen7') {
-                screen.classList.add('fade-in');
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            if(difficulty === 'hard') {
+                document.body.classList.add('hard-mode');
             } else {
-                screen.classList.remove('fade-in'); // הופעה פתאומית ברמה קשה
+                document.body.classList.remove('hard-mode');
             }
         }
 
-        function setupEventListeners() {
-            // מסך 1 ל-2
-            document.getElementById('btnToScreen2').onclick = () => showScreen('screen2');
-            
-            // מסך 2 קושי
-            document.getElementById('btnEasy').onclick = () => selectDifficulty('easy');
-            document.getElementById('btnHard').onclick = () => selectDifficulty('hard');
-            
-            // גילוי מידע
-            for(let i=1; i<=4; i++) {
-                document.getElementById(`infoBtn${i}`).onclick = () => revealInfo(i);
-            }
-            
-            // אבחון
-            document.getElementById('btnToDiagnosis').onclick = () => {
-                showScreen('screen4');
-                diagnosisAttempts = 0;
-                document.getElementById('roleFeedback').classList.add('hidden');
-                document.getElementById('expertAnalysisBox').classList.add('hidden');
-                document.querySelectorAll('input[name="role"]').forEach(radio => radio.checked = false);
-                document.getElementById('diagLacking').value = '';
-                document.getElementById('diagMotive').value = '';
-                document.getElementById('btnSubmitDiagnosis').disabled = false;
-            };
-            
-            document.getElementById('btnSubmitDiagnosis').onclick = submitDiagnosis;
-            document.getElementById('btnToResponse').onclick = setupResponseStage;
-            
-            // תגובה
-            document.getElementById('btnSubmitResponse').onclick = submitResponse;
-            
-            // סיום
-            document.getElementById('btnRestartSame').onclick = () => startScenario();
-            document.getElementById('btnRestartFull').onclick = () => {
-                selectedTags = [];
-                renderTags();
-                document.getElementById('btnToScreen2').disabled = true;
-                showScreen('screen1');
-            };
-        }
-
-        function selectDifficulty(level) {
-            difficulty = level;
-            document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById(level === 'easy' ? 'btnEasy' : 'btnHard').classList.add('selected');
-            setTimeout(() => startScenario(), 300);
-        }
-
-        // --- ניהול ניקוד ---
-        function getLevelTitle(pts) {
-            if (pts <= 50) return "מתחיל מודע";
-            if (pts <= 150) return "מתרגל מיומן";
-            if (pts <= 300) return "מאמן בהתהוות";
-            return "מאמן מומחה";
-        }
-
-        function updateScoreDisplay(addPoints = 0) {
-            const oldTitle = getLevelTitle(score);
-            score += addPoints;
-            localStorage.setItem('commSimScore', score);
-            
-            const newTitle = getLevelTitle(score);
-            const headerScore = document.getElementById('headerScore');
-            headerScore.innerText = `⭐ ${score} נקודות | ${newTitle}`;
-            
-            if (oldTitle !== newTitle && addPoints > 0) {
-                headerScore.classList.remove('pulse');
-                void headerScore.offsetWidth; // trigger reflow
-                headerScore.classList.add('pulse');
-            }
-        }
-// --- לוגיקת משחק עיקרית ---
-        function startScenario() {
-            currentScenarioPoints = 0;
-            currentInfoDiscovered = 0;
-            summaryDetails = { info: 0, diag: 0, keyword: 0, eval: 0 };
-            
-            // סינון תרחישים
-            let filtered = scenariosDB.filter(s => selectedTags.includes(s.tag) || s.tag === 'general');
-            if (filtered.length === 0) filtered = scenariosDB.filter(s => s.tag === 'general');
-            
-            // בחירה אקראית
-            const randIndex = Math.floor(Math.random() * filtered.length);
-            currentScenario = filtered[randIndex];
-            
-            // איפוס UI מסך 3
-            // נמיר את שם התגית לעברית עבור הכותרת
-            const tagHebrew = tagsList.find(t => t.id === currentScenario.tag)?.label || "כללי";
-            document.getElementById('scenarioTitle').innerText = `תרחיש זירה: ${tagHebrew}`;
-            
-            document.getElementById('scenarioMessage').innerText = `"${currentScenario.message}"`;
-            
-            for(let i=1; i<=4; i++) {
-                const btn = document.getElementById(`infoBtn${i}`);
-                const content = document.getElementById(`infoContent${i}`);
-                btn.classList.remove('revealed');
-                btn.disabled = false;
-                content.classList.add('hidden');
-            }
-            document.getElementById('btnToDiagnosis').disabled = true;
-            
-            showScreen('screen3');
-        }
-
-        function revealInfo(index) {
-            const btn = document.getElementById(`infoBtn${index}`);
-            const content = document.getElementById(`infoContent${index}`);
-            
-            if (btn.classList.contains('revealed')) return;
-            
-            btn.classList.add('revealed');
-            btn.disabled = true;
-            content.classList.remove('hidden');
-            
-            // עיצוב לפי רמת קושי
-            if (difficulty === 'easy') content.classList.add('fade-in');
-            
-            const infoKeys = ['identity', 'relationship', 'context', 'expectation'];
-            content.innerText = currentScenario.character[infoKeys[index-1]];
-            
-            currentInfoDiscovered++;
-            if (currentInfoDiscovered === 4) {
-                document.getElementById('btnToDiagnosis').disabled = false;
-                currentScenarioPoints += 5;
-                summaryDetails.info = 5;
-                updateScoreDisplay(5);
-            }
-        }
-
-        function submitDiagnosis() {
-            const selectedRole = document.querySelector('input[name="role"]:checked');
-            const feedback = document.getElementById('roleFeedback');
-            
-            if (!selectedRole) {
-                alert("אנא בחר תפקיד ממשולש הדרמה.");
+        function goToDifficulty() {
+            const checkboxes = document.querySelectorAll('#tags-selection input:checked');
+            selectedTags = Array.from(checkboxes).map(cb => cb.value);
+            if (selectedTags.length === 0) {
+                alert("יש לבחור לפחות מערכת יחסים אחת.");
                 return;
             }
+            showScreen('screen-2');
+        }
+
+        function startGame(selectedDifficulty) {
+            difficulty = selectedDifficulty;
             
-            feedback.classList.remove('hidden', 'feedback-error', 'feedback-success');
+            // סינון תרחישים לפי תגיות ורמת קושי (או רק תגיות כדי שיהיה תמיד מלאי)
+            let possibleScenarios = scenariosDb.filter(s => 
+                s.tag.some(t => selectedTags.includes(t))
+            );
             
-            if (selectedRole.value === currentScenario.diagnosis.role) {
-                // הצלחה
-                feedback.innerText = "✓ זיהוי נכון!";
-                feedback.classList.add('feedback-success');
-                currentScenarioPoints += 15;
-                summaryDetails.diag = 15;
-                updateScoreDisplay(15);
-                showExpertAnalysis();
+            if (possibleScenarios.length === 0) possibleScenarios = scenariosDb; // גיבוי
+
+            currentScenario = possibleScenarios[Math.floor(Math.random() * possibleScenarios.length)];
+            
+            prepareScenarioUI();
+            showScreen('screen-3');
+        }
+
+        function prepareScenarioUI() {
+            // איפוס משתנים
+            infoRevealedCount = 0;
+            diagnosisAttempts = 0;
+            pauseUsed = false;
+            
+            // מסך 3
+            document.getElementById('scenario-message').innerText = `"${currentScenario.message}"`;
+            document.querySelectorAll('.info-btn').forEach(btn => {
+                btn.classList.remove('revealed');
+                btn.disabled = false;
+            });
+            document.getElementById('info-display').style.display = 'none';
+            document.getElementById('btn-to-diagnosis').disabled = true;
+
+            // מסך 4
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            document.getElementById('discounting-input').value = '';
+            document.getElementById('diagnosis-feedback').style.display = 'none';
+            document.getElementById('btn-to-response').style.display = 'none';
+
+            // מסך 5
+            document.getElementById('user-response').value = '';
+            if (difficulty === 'easy') {
+                document.getElementById('timer-ui').style.display = 'none';
+                document.getElementById('hint-ui').style.display = 'block';
+                document.getElementById('hint-ui').innerText = currentScenario.hints.easy;
             } else {
-                // טעות
-                diagnosisAttempts++;
-                if (diagnosisAttempts === 1) {
-                    feedback.innerText = "התפקיד שזיהית אינו מדויק. שים לב למילים של הדמות - האם היא תוקפת, מתמסכנת, או מנסה להציל?";
-                    feedback.classList.add('feedback-error');
+                document.getElementById('timer-ui').style.display = 'flex';
+                document.getElementById('hint-ui').style.display = 'none';
+                document.getElementById('btn-breathe').disabled = false;
+                timeLeft = 60;
+                document.getElementById('time-left').innerText = timeLeft;
+            }
+        }
+
+        function revealInfo(type, btn) {
+            if (btn.classList.contains('revealed')) return;
+            btn.classList.add('revealed');
+            infoRevealedCount++;
+            
+            const infoDisplay = document.getElementById('info-display');
+            infoDisplay.style.display = 'block';
+            infoDisplay.innerText = currentScenario.character[type];
+
+            if (infoRevealedCount === 4) {
+                updateScore(5); // ניקוד על גילוי מידע
+                document.getElementById('btn-to-diagnosis').disabled = false;
+                infoDisplay.innerText += "\n\nכל המידע נחשף! (+5 נקודות)";
+            }
+        }
+
+        function goToDiagnosis() {
+            showScreen('screen-4');
+        }
+
+        function checkDiagnosis() {
+            const roleSelected = document.querySelector('input[name="role"]:checked');
+            const motiveSelected = document.querySelector('input[name="motive"]:checked');
+            const feedback = document.getElementById('diagnosis-feedback');
+            
+            if (!roleSelected || !motiveSelected) {
+                alert("יש לענות על שאלות 1 ו-3.");
+                return;
+            }
+
+            diagnosisAttempts++;
+            const isRoleCorrect = roleSelected.value === currentScenario.diagnosis.role;
+            const isMotiveCorrect = motiveSelected.value === currentScenario.diagnosis.motive;
+
+            feedback.style.display = 'block';
+
+            if (isRoleCorrect && isMotiveCorrect) {
+                feedback.className = 'feedback success';
+                feedback.innerHTML = `<strong>תשובה נכונה! (+15 נקודות)</strong><br>${currentScenario.diagnosis.expertAnalysis}`;
+                updateScore(15);
+                document.getElementById('btn-to-response').style.display = 'block';
+            } else {
+                if (diagnosisAttempts >= 2) {
+                    feedback.className = 'feedback error';
+                    feedback.innerHTML = `<strong>ניתוח המומחה:</strong><br>${currentScenario.diagnosis.expertAnalysis}`;
+                    document.getElementById('btn-to-response').style.display = 'block';
                 } else {
-                    feedback.innerText = `טעות. התפקיד הנכון הוא: ${getRoleNameHebrew(currentScenario.diagnosis.role)}`;
-                    feedback.classList.add('feedback-error');
-                    showExpertAnalysis();
+                    feedback.className = 'feedback error';
+                    feedback.innerText = "חלק מהתשובות שגויות. נסה שוב (נסיון אחרון).";
                 }
             }
         }
 
-        function getRoleNameHebrew(role) {
-            if (role === 'victim') return 'קורבן';
-            if (role === 'rescuer') return 'מציל';
-            return 'רודף';
-        }
-
-        function showExpertAnalysis() {
-            document.getElementById('btnSubmitDiagnosis').disabled = true;
-            document.querySelectorAll('input[name="role"]').forEach(r => r.disabled = true);
-            
-            const expertBox = document.getElementById('expertAnalysisBox');
-            expertBox.classList.remove('hidden');
-            if (difficulty === 'easy') expertBox.classList.add('fade-in');
-            
-            document.getElementById('expertAnalysisText').innerText = currentScenario.diagnosis.expertAnalysis;
-        }
-function setupResponseStage() {
-            showScreen('screen5');
-            document.getElementById('userResponseText').value = '';
-            
-            const hintBox = document.getElementById('hintBox');
-            if (difficulty === 'easy') {
-                hintBox.classList.remove('hidden');
-                document.getElementById('hintText').innerText = currentScenario.hints.easy;
-                document.getElementById('timerDisplay').classList.add('hidden');
-            } else {
-                hintBox.classList.add('hidden');
+        function goToResponse() {
+            showScreen('screen-5');
+            if (difficulty === 'hard') {
                 startTimer();
             }
         }
 
         function startTimer() {
-            const timerDisplay = document.getElementById('timerDisplay');
-            timerDisplay.classList.remove('hidden', 'danger');
-            timeLeft = 90;
-            
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
-                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-                const s = (timeLeft % 60).toString().padStart(2, '0');
-                timerDisplay.innerText = `${m}:${s}`;
-                
-                if (timeLeft <= 10) timerDisplay.classList.add('danger');
-                
+                document.getElementById('time-left').innerText = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    timerDisplay.innerText = "00:00";
-                    submitResponse(); // כופה הגשה
+                    evaluateResponse(); // זמן נגמר, עובר אוטומטית להערכה
                 }
             }, 1000);
         }
 
-        function submitResponse() {
+        function useBreathe() {
+            if (pauseUsed) return;
+            pauseUsed = true;
+            document.getElementById('btn-breathe').disabled = true;
             clearInterval(timerInterval);
-            const userText = document.getElementById('userResponseText').value.trim();
             
-            if (!userText && timeLeft > 0) {
-                alert("אנא כתוב תגובה לפני ההמשך.");
-                return;
-            }
+            let btn = document.getElementById('btn-breathe');
+            btn.innerText = "נושם... (השהיה של 5 שניות)";
             
-            // חישוב ניקוד מילות מפתח
-            let kwPoints = 0;
-            const positiveWords = ["איך", "מה דעתך", "מה הצעד", "מה ניסית", "אני סומך", "מה אתה חושב", "באיזה דרך", "מה תוכל"];
-            const negativeWords = ["אתה חייב", "אני אעשה", "תעשה", "למה אתה תמיד", "זה בגלל ש", "אני יודע מה טוב", "תסמוך עלי"];
-            
-            positiveWords.forEach(w => { if (userText.includes(w)) kwPoints += 1; });
-            negativeWords.forEach(w => { if (userText.includes(w)) kwPoints -= 2; });
-            
-            kwPoints = Math.max(0, Math.min(10, kwPoints)); // הגבלה בין 0 ל-10
-            summaryDetails.keyword = kwPoints;
-            currentScenarioPoints += kwPoints;
-            updateScoreDisplay(kwPoints);
-            
-            // הכנת מסך הערכה
-            showScreen('screen6');
-            document.getElementById('goldStandardText').innerText = `"${currentScenario.goldStandard}"`;
-            document.getElementById('userResponseCopy').innerText = `"${userText || '(לא נכתבה תגובה)'}"`;
+            setTimeout(() => {
+                btn.innerText = "זמן נשימה נוצל";
+                startTimer();
+            }, 5000);
         }
 
-        function submitEvaluation(points) {
-            summaryDetails.eval = points;
-            currentScenarioPoints += points;
-            updateScoreDisplay(points);
+        function evaluateResponse() {
+            clearInterval(timerInterval);
+            const responseText = document.getElementById('user-response').value;
+            let heuristicsScore = 0;
+            let matchedPositive = [];
+            let matchedNegative = [];
+
+            const positiveWords = ['איך', 'מה דעתך', 'מה הצעד', 'אני סומך', 'מה'];
+            const negativeWords = ['אתה חייב', 'אני אעשה', 'תעשה', 'למה אתה תמיד', 'בגללך'];
+
+            positiveWords.forEach(word => {
+                if (responseText.includes(word)) {
+                    heuristicsScore += 1;
+                    matchedPositive.push(word);
+                }
+            });
+
+            negativeWords.forEach(word => {
+                if (responseText.includes(word)) {
+                    heuristicsScore -= 2;
+                    matchedNegative.push(word);
+                }
+            });
+
+            const heuristicsFeedback = document.getElementById('heuristics-feedback');
+            heuristicsFeedback.innerHTML = `<strong>ניתוח אוטומטי של התגובה:</strong><br>
+                מילים מעצימות שזוהו: ${matchedPositive.length > 0 ? matchedPositive.join(', ') : 'אין'} (+${matchedPositive.length} נק')<br>
+                מילים חוסמות שזוהו: ${matchedNegative.length > 0 ? matchedNegative.join(', ') : 'אין'} (${matchedNegative.length * -2} נק')`;
             
-            // הצגת מסך סיכום
-            showScreen('screen7');
-            document.getElementById('scenarioPoints').innerText = `+${currentScenarioPoints}`;
-            document.getElementById('summaryInfoPts').innerText = summaryDetails.info;
-            document.getElementById('summaryDiagPts').innerText = summaryDetails.diag;
-            document.getElementById('summaryKeywordPts').innerText = summaryDetails.keyword;
-            document.getElementById('summaryEvalPts').innerText = summaryDetails.eval;
+            if(heuristicsScore > 0) updateScore(heuristicsScore);
+
+            document.getElementById('gold-standard-text').innerText = currentScenario.goldStandard;
+            showScreen('screen-6');
         }
 
-        // --- הפעלה ראשונית ---
-        initApp();
-        showScreen('screen1');
+        function finishScenario(points) {
+            updateScore(points);
+            
+            let title = "מתבונן";
+            if (totalScore > 50 && totalScore <= 150) title = "מפענח";
+            else if (totalScore > 150 && totalScore <= 300) title = "אמן תקשורת";
+            else if (totalScore > 300) title = "מומחה ליחסים";
+
+            alert(`סיימת את התרחיש!\nניקוד נוכחי: ${totalScore}\nתואר נוכחי: ${title}`);
+            showScreen('screen-1'); // חזרה לבחירת קטגוריות
+        }
     </script>
 </body>
 </html>
