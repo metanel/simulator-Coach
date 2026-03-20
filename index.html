@@ -3,347 +3,1811 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>סימולטור אימון תקשורת</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>סימולטור תקשורת - אימון משולש הדרמה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #f4f7f6;
-            --container-bg: #ffffff;
-            --text-main: #333333;
-            --text-secondary: #555555;
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --border-color: #e0e0e0;
-            --btn-color: #27ae60;
-            --btn-hover: #219653;
-            --box-bg: #f9fbfd;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface2: #fafafa;
+            --border: #e0e0e0;
+            --accent: #1e3a8a;
+            --accent2: #059669;
+            --accent3: #0891b2;
+            --text: #1f2937;
+            --text-dim: #6b7280;
+            --success: #059669;
+            --warning: #f59e0b;
+            --danger: #dc2626;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
+            font-family: 'Alef', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            background-color: var(--container-bg);
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            padding: 16px;
+            min-height: 100vh;
+            padding-bottom: 80px;
         }
 
-        h1, h2, h3 {
-            color: var(--primary-color);
-            margin-top: 30px;
-            margin-bottom: 15px;
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 12px;
             text-align: center;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
         }
 
         h2 {
-            font-size: 20px;
-            background-color: var(--box-bg);
-            padding: 10px;
-            border-radius: 5px;
-            border-right: 4px solid var(--accent-color);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
         }
 
         h3 {
-            font-size: 16px;
-            margin-bottom: 5px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
         }
 
         p {
-            color: var(--text-secondary);
+            color: var(--text-dim);
+            margin-bottom: 16px;
             font-size: 15px;
-            margin-bottom: 15px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 24px 0;
         }
 
-        label {
-            display: block;
-            font-weight: bold;
+        .feature {
+            background: var(--surface2);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .feature:active {
+            transform: scale(0.98);
+        }
+
+        .feature-icon {
+            font-size: 32px;
             margin-bottom: 8px;
-            color: var(--primary-color);
         }
 
-        input[type="text"],
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+        .feature-title {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
             font-size: 15px;
-            background-color: #fff;
-            transition: border-color 0.3s;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--accent-color);
-            outline: none;
+        .feature-desc {
+            font-size: 13px;
+            color: var(--text-dim);
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .radio-group {
-            background: var(--box-bg);
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-        }
-
-        .radio-option {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .radio-option input[type="radio"] {
-            margin-left: 10px;
-            width: 18px;
-            height: 18px;
-        }
-
-        .info-box {
-            background-color: #fff8e1;
-            border: 1px solid #ffe082;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .info-box h4 {
-            margin-top: 0;
-            color: #f57f17;
-            margin-bottom: 10px;
-        }
-
-        .info-box strong {
-            color: #d84315;
-        }
-
-        .coach-guide {
-            background-color: #e8f5e9;
-            border: 1px solid #a5d6a7;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .coach-guide h4 {
-            margin-top: 0;
-            color: #2e7d32;
-        }
-
-        .coach-guide strong {
-            color: #1b5e20;
-        }
-
-        .btn-submit {
-            display: block;
-            width: 100%;
-            background-color: var(--btn-color);
+        .btn {
+            background: var(--accent);
             color: white;
             border: none;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 6px;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 700;
             cursor: pointer;
-            text-align: center;
-            margin-top: 30px;
-            margin-bottom: 40px;
-            transition: background-color 0.3s;
+            width: 100%;
+            transition: all 0.2s;
+            font-family: 'Alef', sans-serif;
+            min-height: 52px;
+            touch-action: manipulation;
         }
 
-        .btn-submit:hover {
-            background-color: var(--btn-hover);
+        .btn:active {
+            transform: scale(0.98);
         }
 
-        .post-submit-info {
-            border-top: 2px dashed var(--border-color);
-            padding-top: 30px;
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
-        .post-submit-info ul {
-            padding-right: 20px;
+        .btn-success {
+            background: var(--success);
         }
 
-        .post-submit-info li {
-            margin-bottom: 10px;
-            color: var(--text-secondary);
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .jotform-embed-area {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            background: #fafafa;
+        .role-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
             margin-bottom: 20px;
-            color: #777;
+        }
+
+        .role-btn {
+            background: var(--surface2);
+            border: 2px solid var(--border);
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .role-btn:active {
+            transform: scale(0.98);
+        }
+
+        .role-btn.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+
+        .role-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .role-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .context-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .context-btn {
+            background: var(--surface2);
+            border: 2px solid var(--border);
+            padding: 16px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 14px;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .context-btn:active {
+            transform: scale(0.98);
+        }
+
+        .context-btn.selected {
+            border-color: var(--accent2);
+            background: var(--accent2);
+            color: white;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: var(--surface);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .role-badge {
+            background: var(--accent);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tips-btn {
+            background: var(--accent3);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            min-height: 48px;
+            min-width: 48px;
+            transition: all 0.2s;
+            font-family: 'Alef', sans-serif;
+            touch-action: manipulation;
+        }
+
+        .tips-btn:active {
+            transform: scale(0.95);
+        }
+
+        .turn-counter {
+            color: var(--text-dim);
+            font-size: 13px;
+            font-weight: 700;
+            flex: 1;
+            text-align: center;
+        }
+
+        .turn-counter.complete {
+            color: var(--success);
+        }
+
+        .finish-btn {
+            background: var(--text-dim);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Alef', sans-serif;
+            min-height: 48px;
+            touch-action: manipulation;
+        }
+
+        .finish-btn.complete {
+            background: var(--success);
+        }
+
+        .finish-btn:active {
+            transform: scale(0.95);
+        }
+
+        .chat-area {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message.character {
+            text-align: right;
+        }
+
+        .message.user {
+            text-align: left;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 85%;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .message.character .message-bubble {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+        }
+
+        .message.user .message-bubble {
+            background: var(--accent);
+            color: white;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 14px;
+            font-style: italic;
+            margin-bottom: 12px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        .feedback-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-right: 4px solid var(--accent3);
+            padding: 14px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .feedback-score {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feedback-score.high { color: var(--success); }
+        .feedback-score.medium { color: var(--warning); }
+        .feedback-score.low { color: var(--danger); }
+
+        .feedback-text {
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .examples-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .example-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            touch-action: manipulation;
+        }
+
+        .example-card:active {
+            transform: scale(0.98);
+            border-color: var(--accent);
+            background: var(--surface);
+        }
+
+        .input-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Alef', sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            min-height: 52px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .send-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Alef', sans-serif;
+            min-height: 52px;
+            min-width: 52px;
+            touch-action: manipulation;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .send-btn:disabled {
+            background: var(--text-dim);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .tip-modal, .offline-modal, .history-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .tip-modal.active, .offline-modal.active, .history-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent3);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-dim);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            touch-action: manipulation;
+        }
+
+        .close-btn:active {
+            background: var(--surface2);
+        }
+
+        .modal-text {
+            font-size: 16px;
+            color: var(--text);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .modal-footer {
+            color: var(--text-dim);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .main-score {
+            font-size: 64px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .score-label {
+            font-size: 16px;
+            color: var(--text-dim);
+        }
+
+        .detailed-scores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .score-card {
+            background: var(--surface2);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .score-card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .score-card-label {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .insight-section {
+            margin-bottom: 20px;
+        }
+
+        .insight-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .insight-content {
+            background: var(--surface2);
+            padding: 14px;
+            border-radius: 8px;
+            border-right: 4px solid var(--accent);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-dim);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .offline-warning {
+            background: var(--warning);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            display: none;
+            font-size: 14px;
+        }
+
+        .offline-warning.active {
+            display: block;
+        }
+
+        .history-btn {
+            position: fixed;
+            bottom: 80px;
+            left: 16px;
+            background: var(--accent2);
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 99;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .history-btn.active {
+            display: flex;
+        }
+
+        .history-btn:active {
+            transform: scale(0.95);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-date {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .history-score {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .history-details {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            margin-top: 8px;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .progress-indicator.improved {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+        }
+
+        .progress-indicator.declined {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dim);
+        }
+
+        @media (min-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .features {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .role-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .context-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .examples-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .detailed-scores {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .input-bar {
+                position: relative;
+                background: none;
+                border: none;
+                padding: 0;
+            }
+
+            .container {
+                padding-bottom: 20px;
+            }
+
+            .history-btn {
+                bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
+    <div class="offline-warning" id="offlineWarning">⚠️ אין חיבור לאינטרנט</div>
     
-    <form action="#" method="POST">
-        <h1>רשום דמות אמיתית מהחיים שלך</h1>
+    <button class="history-btn" id="historyBtn" onclick="showHistory()">📊</button>
 
-        <h2>זהות בסיסית</h2>
-        <div class="form-group">
-            <label>שם מלא</label>
-            <input type="text" name="fullName" required>
-        </div>
-        <div class="form-group">
-            <label>גיל</label>
-            <input type="number" name="age" required>
-        </div>
-
-        <h2>סוג הקשר ביננו</h2>
-        <div class="form-group">
-            <label>מה הדמות הזאת בשבילך?</label>
-            <select name="relationship" required>
-                <option value="" disabled selected>בחר/י סטטוס...</option>
-                <option value="אבא">אבא</option>
-                <option value="אמא">אמא</option>
-                <option value="אח גדול">אח גדול</option>
-                <option value="אח קטן">אח קטן</option>
-                <option value="אחות גדולה">אחות גדולה</option>
-                <option value="אחות קטנה">אחות קטנה</option>
-                <option value="בן דוד">בן דוד</option>
-                <option value="בת דוד">בת דוד</option>
-                <option value="סבא">סבא</option>
-                <option value="סבתא">סבתא</option>
-                <option value="דוד">דוד</option>
-                <option value="דודה">דודה</option>
-                <option value="חבר קרוב">חבר קרוב</option>
-                <option value="חבר רחוק">חבר רחוק</option>
-                <option value="לקוח">לקוח</option>
-                <option value="מנהל בעבודה">מנהל בעבודה</option>
-                <option value="מורה">מורה</option>
-                <option value="בן זוג">בן זוג</option>
-                <option value="בת זוג">בת זוג</option>
-                <option value="אחר">אחר</option>
-            </select>
-        </div>
-
-        <h2>הקשר מיידי לסיטואציה</h2>
-        <div class="form-group">
-            <label>מה קרה רגע לפני?</label>
-            <textarea name="contextBefore" required></textarea>
-        </div>
-
-        <h2>תיאור הציפייה הלגיטימית והבריאה מהקשר (מחליף את מונח ה"חוזה")</h2>
-        <div class="form-group">
-            <label>הגדרת התפקיד והציפייה</label>
-            <textarea name="roleExpectation" required></textarea>
-        </div>
-
-        <h2>הודעה עם מטען רגשי</h2>
-        <div class="form-group">
-            <label>מה ההודעה שקיבלת מהדמות הזאת?</label>
-            <textarea name="emotionalMessage" required></textarea>
-        </div>
-
-        <h1>🎯 אבחן את המצב</h1>
-        
-        <div class="form-group">
-            <label>מהו התפקיד שהדמות לוקחת על עצמה כרגע?</label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" id="victim" name="dramaRole" value="הקורבן" required>
-                    <label for="victim" style="margin:0; font-weight:normal;">הקורבן</label>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="screen active">
+            <div class="card">
+                <h1>🎭 סימולטור תקשורת</h1>
+                <p style="text-align: center; font-size: 17px;">שפר את התקשורת שלך דרך אימון חי</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-title">אימון בזמן אמת</div>
+                        <div class="feature-desc">תרגול עם דמויות דינמיות</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">💡</div>
+                        <div class="feature-title">פידבק מיידי</div>
+                        <div class="feature-desc">קבל ציון וניתוח אחרי כל תגובה</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">מעקב התקדמות</div>
+                        <div class="feature-desc">היסטוריית אימונים וציונים</div>
+                    </div>
                 </div>
-                <div class="radio-option">
-                    <input type="radio" id="rescuer" name="dramaRole" value="המציל">
-                    <label for="rescuer" style="margin:0; font-weight:normal;">המציל</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="persecutor" name="dramaRole" value="הרודף/התוקף">
-                    <label for="persecutor" style="margin:0; font-weight:normal;">הרודף/התוקף</label>
-                </div>
+                
+                <button class="btn" onclick="startSetup()">בואו נתחיל</button>
             </div>
         </div>
 
-        <div class="info-box">
-            <h4>פירוט התפקידים במשולש הדרמה:</h4>
-            <p><strong>הקורבן:</strong> לרוב "ילד מותאם״. הוא פועל מתוך תחושת חוסר אונים, כניעה או מרדנות פסיבית. הוא "מחסיר" את היכולת שלו לפתור בעיות באופן עצמאי. המניע: להימנע מאחריות ולהשיג תשומת לב או "הצלה" מבחוץ.</p>
-            <p><strong>המציל:</strong> לרוב "הורה מזין" בגרסתו הלא-בריאה. הוא פועל מתוך עמדה של "אני בסדר, אתה לא בסדר", ומרגיש שעליו לעשות עבור האחר כדי להרגיש בעל ערך. המניע: להרגיש נחוץ ולשמור על עליונות מוסרית או תפקודית.</p>
-            <p><strong>הרודף/התוקפן:</strong> לרוב "הורה ביקורתי". הוא פועל מתוך צורך לשלוט, להאשים ולבקר. הוא "מחסיר" את הערך והרגשות של האחר. המניע: לפרוק תסכול, לשלוט בסיטואציה ולהימנע מלהרגיש פגיע בעצמו.</p>
+        <!-- Setup Screen -->
+        <div id="setupScreen" class="screen">
+            <div class="card">
+                <h2>בחר את התפקיד שלך</h2>
+                <p>איזה תפקיד אתה רוצה לתרגל?</p>
+                
+                <div class="role-grid">
+                    <div class="role-btn" onclick="selectRole('victim')">
+                        <div class="role-icon">😔</div>
+                        <div class="role-name">קורבן</div>
+                    </div>
+                    <div class="role-btn" onclick="selectRole('rescuer')">
+                        <div class="role-icon">🦸</div>
+                        <div class="role-name">מציל</div>
+                    </div>
+                    <div class="role-btn" onclick="selectRole('persecutor')">
+                        <div class="role-icon">😠</div>
+                        <div class="role-name">רודף</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>בחר הקשר תקשורתי</h2>
+                <p>באיזה הקשר תרצה לתרגל?</p>
+                
+                <div class="context-grid">
+                    <div class="context-btn" onclick="selectContext('romantic')">
+                        <div>💑 זוגי</div>
+                    </div>
+                    <div class="context-btn" onclick="selectContext('family')">
+                        <div>👨‍👩‍👧 משפחתי</div>
+                    </div>
+                    <div class="context-btn" onclick="selectContext('work')">
+                        <div>💼 עבודה</div>
+                    </div>
+                    <div class="context-btn" onclick="selectContext('friendship')">
+                        <div>🤝 חברות</div>
+                    </div>
+                    <div class="context-btn" onclick="selectContext('client')">
+                        <div>👤 לקוח</div>
+                    </div>
+                    <div class="context-btn" onclick="selectContext('employee')">
+                        <div>👔 עובד</div>
+                    </div>
+                    <div class="context-btn" onclick="selectContext('trainee')">
+                        <div>🎯 מאומן</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" id="startTrainingBtn" onclick="startTraining()" disabled>התחל אימון</button>
         </div>
 
-        <h2>כתוב תגובה</h2>
-        <div class="form-group">
-            <textarea name="coachResponse" placeholder="הזן את תגובתך כאן..." required></textarea>
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="status-bar">
+                <div class="role-badge" id="roleBadge"></div>
+                <button class="tips-btn" onclick="showTip()">💡</button>
+                <div class="turn-counter" id="turnCounter">סבב 0 / 8</div>
+                <button class="finish-btn" id="finishBtn" onclick="finishTraining()">סיים</button>
+            </div>
+
+            <div class="chat-area" id="chatArea">
+                <div class="loading active" id="initialLoading">
+                    <div class="spinner"></div>
+                    <div>מכין את האימון...</div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <span>הדמות כותבת</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div id="examplesContainer"></div>
+
+            <div class="input-bar">
+                <input type="text" class="input-field" id="userInput" placeholder="כתוב את התגובה שלך..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">📤</button>
+            </div>
         </div>
 
-        <div class="coach-guide">
-            <h4>התייחסות המאמן לכל תפקיד</h4>
-            <p>המאמן פועל תמיד ממצב אני "בוגר". הוא רואה את הפוטנציאל של האחר ומשתמש בקליפת המוח הקדמית כדי לא להישאב לדרמה.</p>
-            <p><strong>התייחסות לקורבן:</strong> <em>הפעולה:</em> במקום לתת פתרונות, המאמן שואל שאלות המעבירות את הבעלות לצד השני: "מה הצעד הראשון שאתה מוכן לעשות?". הוא מסרב "להציל" ומחזק את תחושת המסוגלות של האחר. <em>המטרה:</em> להפוך את הקורבן ליוצר.</p>
-            <p><strong>התייחסות למציל:</strong> <em>הפעולה:</em> המאמן מאתגר את הצורך של המציל להתערב. הוא שואל: "איך העזרה הזו תורמת לאוטונומיה של הצד השני?". הוא מציב גבולות ברורים ומזמין את המציל להפוך למאמן בעצמו. <em>המטרה:</em> להפוך את המציל למאמן (תמיכה ללא השתלטות).</p>
-            <p><strong>התייחסות לרודף:</strong> <em>הפעולה:</em> המאמן נשאר ענייני ואובייקטיבי. הוא לא נכנס למגננה, אלא משקף את המציאות כפי שהיא ומציב דרישות לביצוע ללא האשמה. הוא שואל: "מהי התוצאה שאתה רוצה להשיג דרך הביקורת הזו?". <em>המטרה:</em> להפוך את הרודף למאתגר (Challenger) – דחיפה לצמיחה דרך עובדות וסטנדרטים.</p>
+        <!-- Analysis Screen -->
+        <div id="analysisScreen" class="screen">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 20px;">ניתוח מסכם</h2>
+                
+                <div class="score-display">
+                    <div class="main-score" id="mainScore">--</div>
+                    <div class="score-label">ציון כללי</div>
+                </div>
+
+                <div id="progressComparison"></div>
+
+                <div class="detailed-scores">
+                    <div class="score-card">
+                        <div class="score-card-value" id="adultScore" style="color: var(--accent);">--</div>
+                        <div class="score-card-label">עמדת בוגר</div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-card-value" id="boundariesScore" style="color: var(--accent2);">--</div>
+                        <div class="score-card-label">הצבת גבולות</div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-card-value" id="responsibilityScore" style="color: var(--accent3);">--</div>
+                        <div class="score-card-label">העברת אחריות</div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-card-value" id="dramaScore" style="color: var(--success);">--</div>
+                        <div class="score-card-label">הימנעות מדרמה</div>
+                    </div>
+                </div>
+
+                <div class="insight-section">
+                    <div class="insight-title">🌟 הרגע הטוב ביותר</div>
+                    <div class="insight-content" id="bestMoment">טוען...</div>
+                </div>
+
+                <div class="insight-section">
+                    <div class="insight-title">💪 חוזקות</div>
+                    <div class="insight-content" id="strengths">טוען...</div>
+                </div>
+
+                <div class="insight-section">
+                    <div class="insight-title">🌱 תחומים לצמיחה</div>
+                    <div class="insight-content" id="growthAreas">טוען...</div>
+                </div>
+
+                <div class="insight-section">
+                    <div class="insight-title">🎯 המלצה לאימון הבא</div>
+                    <div class="insight-content" id="nextRecommendation">טוען...</div>
+                </div>
+
+                <button class="btn btn-success" onclick="resetSimulator()">אימון נוסף</button>
+            </div>
         </div>
 
-        <button type="submit" class="btn-submit">שלח</button>
-    </form>
+        <!-- Tip Modal -->
+        <div class="tip-modal" id="tipModal" onclick="closeTipModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title" id="tipTitle">טיפ 1/7</div>
+                    <button class="close-btn" onclick="closeTip()">×</button>
+                </div>
+                <div class="modal-text" id="tipText"></div>
+                <div class="modal-footer">לחץ שוב על "💡" לטיפ הבא</div>
+            </div>
+        </div>
 
-    <div class="post-submit-info">
-        <h2>ה"מאתגר" וה"יוצר" (משולש ההעצמה)</h2>
-        <p>ה<strong>"מאתגר"</strong> הוא הצד שדוחף לצמיחה. בעוד שהרודף משתמש בביקורת, האשמה ושליטה כדי להקטין אחרים, המאתגר משתמש בלחץ חיובי ובאמת כדי לעורר למידה.</p>
-        <ul>
-            <li><strong>קריאה לפעולה:</strong> המאתגר מציב דרישות גבוהות, אך הוא עושה זאת כדי שהיוצר יגלה את הכוחות של עצמו. הוא אינו מנסה להעניש, אלא להוביל להתפתחות.</li>
-            <li><strong>אמירת אמת ללא שיפוטיות:</strong> המאתגר משקף את המציאות כפי שהיא, גם אם היא לא נעימה ("עובדתית, לא עמדת ביעד שהצבת לעצמך"). הוא מתמקד בעובדות ובשיפור, לא בהטחת אשמה אישית.</li>
-            <li><strong>הצבת גבולות בריאים:</strong> המאתגר יודע לומר "לא" ברור ולעמוד על עקרונותיו, מה שמכריח את הסובבים אותו לצאת מאזור הנוחות שלהם ולהפעיל את מצב ה"בוגר" שלהם.</li>
-        </ul>
+        <!-- Offline Modal -->
+        <div class="offline-modal" id="offlineModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">⚠️ אין חיבור לאינטרנט</div>
+                    <button class="close-btn" onclick="closeOfflineModal()">×</button>
+                </div>
+                <div class="modal-text">
+                    הסימולטור דורש חיבור לאינטרנט כדי לתקשר עם מערכת ה-AI.
+                    אנא בדוק את החיבור שלך ונסה שוב.
+                </div>
+                <button class="btn" onclick="closeOfflineModal()">הבנתי</button>
+            </div>
+        </div>
 
-        <p>ה<strong>"יוצר"</strong> הוא הליבה של משולש ההעצמה. בעוד שהקורבן ממוקד בבעיות ובמה ש"קורה לו", היוצר ממוקד בתוצאות ובמה שהוא רוצה ליצור.</p>
-        <ul>
-            <li><strong>מיקוד בתוצאה (Outcome Orientation):</strong> היוצר שואל את עצמו: "מה אני רוצה להשיג?" במקום "למה זה קרה לי?". הוא מפסיק להשקיע אנרגיה בהתנגדות למציאות ומתחיל להשקיע אותה בבניית המציאות הרצויה.</li>
-            <li><strong>בעלות ואחריות (Agency):</strong> היוצר מכיר בכך שיש לו את היכולת לבחור את תגובתו לכל סיטואציה, גם אם אין לו שליטה על הנסיבות החיצוניות. זהו המעבר מ"חוסר אונים נרכש" ל"מסוגלות עצמית".</li>
-            <li><strong>הקשר למוח הקדמי:</strong> זהו שימוש בשיא הפוטנציאל של ה-Prefrontal Cortex. היוצר משתמש בדמיון, תכנון לטווח ארוך ופתרון בעיות אקטיבי – פונקציות שלא קיימות במצב ה"קורבן" הרגשי.</li>
-        </ul>
-
-        <h2>עקרונות תפקיד המאמן</h2>
-        <ol>
-            <li><strong>שאילת שאלות (Inquiry) במקום מתן תשובות:</strong> המאמן אינו מניח שהוא יודע מה הכי טוב עבור האחר. במקום לומר "אתה צריך לעשות X", הוא ישאל "מהן האפשרויות שעומדות בפניך כרגע?" או "מה לדעתך הצעד הראשון הנכון עבורך?".</li>
-            <li><strong>העברת האחריות:</strong> המאמן מכיר בכך שהאחריות לתוצאות שייכת ל"יוצר" (מי שהיה קודם ה"קורבן"). הוא מציע תמיכה וכלים, אך לא לוקח על עצמו את העבודה הקשה של האחר.</li>
-            <li><strong>התמקדות בתוצאה רצויה (Outcome Orientation):</strong> בעוד שהמציל מתמקד ב"בעיה" ובלחץ המיידי שהיא מייצרת, המאמן עוזר לאחר להתמקד ב"מה אני רוצה ליצור?" ובדרכים להגיע לשם.</li>
-            <li><strong>הצבת גבולות:</strong> המאמן יודע מתי לומר "לא" ומתי העזרה שלו הופכת להפרעה. הוא אינו מקריב את צרכיו האישיים כדי "להציל" מישהו אחר.</li>
-        </ol>
-
-        <h2>הקשר למוח הקדמי (Prefrontal Cortex)</h2>
-        <p>בזמן שהמציל פועל לרוב מתוך דחף רגשי אוטומטי (מערכת לימבית / מצב אני "הורה"), המאמן פועל מתוך קליפת המוח הקדמית (PFC). זהו תפקוד של מצב ה"בוגר" ב-TA, המאפשר:</p>
-        <ul>
-            <li><strong>השהיית תגובה:</strong> היכולת לא לקפוץ מיד "להציל" גם כשיש לחץ רגשי.</li>
-            <li><strong>אמפתיה קוגניטיבית:</strong> הבנה של מצב האחר מבלי להישאב לתוך הדרמה הרגשית שלו.</li>
-            <li><strong>תכנון אסטרטגי:</strong> עזרה לאחר לבנות תוכנית פעולה רציונלית.</li>
-        </ul>
+        <!-- History Modal -->
+        <div class="history-modal" id="historyModal" onclick="closeHistoryModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">📊 היסטוריית אימונים</div>
+                    <button class="close-btn" onclick="closeHistory()">×</button>
+                </div>
+                <div id="historyList"></div>
+            </div>
+        </div>
     </div>
-</div>
 
+    <script>
+        // Configuration
+        const ANTHROPIC_API_KEY = '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';
+        const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+
+        // State
+        let selectedRole = null;
+        let selectedContext = null;
+        let currentTipIndex = 0;
+        let turnCount = 0;
+        let conversationHistory = [];
+        let currentExamples = [];
+        let trainingHistory = [];
+        let currentSessionScores = null;
+
+        // Tips database
+        const tips = {
+            persecutor: [
+                "עצור לפני שאתה מגיב",
+                "הרודף הוא לרוב 'הורה ביקורתי'",
+                "המניע: לפרוק תסכול ולשלוט",
+                "היה ענייני ואובייקטיבי",
+                "שקף מציאות + דרישות ללא האשמה",
+                "שאל: 'מה התוצאה הרצויה?'",
+                "המטרה: להפוך רודף → מאתגר"
+            ],
+            rescuer: [
+                "עצור לפני שאתה מגיב",
+                "המציל הוא 'הורה מזין' לא-בריא",
+                "הוא מרגיש שעליו לעשות כדי להרגיש ערך",
+                "פועל מתוך 'אני בסדר, אתה לא'",
+                "המניע: להרגיש נחוץ ועליונות",
+                "אתגר את הצורך להתערב",
+                "שאל: 'איך זה תורם לי?'"
+            ],
+            victim: [
+                "עצור לפני שאתה מגיב",
+                "הקורבן הוא 'ילד מותאם'",
+                "המניע: להימנע מאחריות",
+                "אל תיתן פתרונות - שאל שאלות",
+                "שאל: 'מה הצעד הראשון?'",
+                "סרב להציל וחזק מסוגלות",
+                "המטרה: להפוך קורבן → יוצר"
+            ]
+        };
+
+        const roleNames = {
+            victim: '😔 קורבן',
+            rescuer: '🦸 מציל',
+            persecutor: '😠 רודף'
+        };
+
+        const contextNames = {
+            romantic: 'זוגי',
+            family: 'משפחתי',
+            work: 'עבודה',
+            friendship: 'חברות',
+            client: 'לקוח',
+            employee: 'עובד',
+            trainee: 'מאומן'
+        };
+
+        // Initialize
+        window.addEventListener('load', function() {
+            loadTrainingHistory();
+            updateHistoryButton();
+            checkOnlineStatus();
+            
+            // Monitor online/offline status
+            window.addEventListener('online', function() {
+                document.getElementById('offlineWarning').classList.remove('active');
+            });
+            
+            window.addEventListener('offline', function() {
+                document.getElementById('offlineWarning').classList.add('active');
+            });
+        });
+
+        function checkOnlineStatus() {
+            if (!navigator.onLine) {
+                document.getElementById('offlineWarning').classList.add('active');
+            }
+        }
+
+        // Screen navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startSetup() {
+            showScreen('setupScreen');
+        }
+
+        // Role selection
+        function selectRole(role) {
+            selectedRole = role;
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.closest('.role-btn').classList.add('selected');
+            updateStartButton();
+        }
+
+        // Context selection
+        function selectContext(context) {
+            selectedContext = context;
+            document.querySelectorAll('.context-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.closest('.context-btn').classList.add('selected');
+            updateStartButton();
+        }
+
+        function updateStartButton() {
+            const btn = document.getElementById('startTrainingBtn');
+            btn.disabled = !(selectedRole && selectedContext);
+        }
+
+        // Start training
+        async function startTraining() {
+            if (!selectedRole || !selectedContext) return;
+            
+            if (!navigator.onLine) {
+                document.getElementById('offlineModal').classList.add('active');
+                return;
+            }
+            
+            showScreen('gameScreen');
+            document.getElementById('roleBadge').textContent = roleNames[selectedRole];
+            
+            conversationHistory = [];
+            turnCount = 0;
+            currentTipIndex = 0;
+            updateTurnCounter();
+            
+            await getCharacterMessage();
+        }
+
+        // API call to Claude
+        async function callClaude(messages, systemPrompt = '') {
+            if (!navigator.onLine) {
+                document.getElementById('offlineModal').classList.add('active');
+                return null;
+            }
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': ANTHROPIC_API_KEY,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: CLAUDE_MODEL,
+                        max_tokens: 1000,
+                        system: systemPrompt,
+                        messages: messages
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.content[0].text;
+            } catch (error) {
+                console.error('Claude API Error:', error);
+                if (!navigator.onLine) {
+                    document.getElementById('offlineModal').classList.add('active');
+                } else {
+                    alert('שגיאה בתקשורת עם השרת. אנא בדוק את חיבור האינטרנט ונסה שוב.');
+                }
+                return null;
+            }
+        }
+
+        // Get character opening message
+        async function getCharacterMessage() {
+            showTypingIndicator();
+            
+            const prompt = `אתה משחק דמות ב${contextNames[selectedContext]}. 
+אני מתרגל להתמודד עם תפקיד ${selectedRole === 'victim' ? 'קורבן' : selectedRole === 'rescuer' ? 'מציל' : 'רודף'}.
+
+צור הודעת פתיחה (5-15 מילים) שבה אתה בתפקיד ${selectedRole === 'victim' ? 'קורבן' : selectedRole === 'rescuer' ? 'מציל' : 'רודף'} בהקשר ${contextNames[selectedContext]}.
+
+הודעה בלבד, ללא הסברים.`;
+
+            const response = await callClaude([{ role: 'user', content: prompt }]);
+            
+            hideTypingIndicator();
+            
+            if (response) {
+                document.getElementById('initialLoading').classList.remove('active');
+                addMessage(response, 'character');
+                conversationHistory.push({ role: 'character', content: response });
+                await generateExamples();
+            }
+        }
+
+        // Generate response examples
+        async function generateExamples() {
+            const lastMessage = conversationHistory[conversationHistory.length - 1].content;
+            
+            const prompt = `בהתבסס על ההודעה: "${lastMessage}"
+
+צור 4 דוגמאות תגובה קצרות (5-10 מילים כל אחת):
+1. תגובת קורבן (victim)
+2. תגובת מציל (rescuer)  
+3. תגובת רודף (persecutor)
+4. תגובת בוגר (adult) - תקשורת בריאה
+
+החזר JSON בפורמט:
+{
+  "victim": "תגובה קצרה",
+  "rescuer": "תגובה קצרה",
+  "persecutor": "תגובה קצרה",
+  "adult": "תגובה קצרה"
+}`;
+
+            const response = await callClaude([{ role: 'user', content: prompt }]);
+            
+            if (response) {
+                try {
+                    const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
+                    const examples = JSON.parse(cleaned);
+                    displayExamples(examples);
+                } catch (e) {
+                    console.error('Failed to parse examples:', e);
+                }
+            }
+        }
+
+        // Display examples
+        function displayExamples(examples) {
+            const container = document.getElementById('examplesContainer');
+            const examplesArray = Object.values(examples);
+            
+            for (let i = examplesArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [examplesArray[i], examplesArray[j]] = [examplesArray[j], examplesArray[i]];
+            }
+            
+            currentExamples = examplesArray;
+            
+            container.innerHTML = `
+                <div class="examples-container">
+                    ${examplesArray.map((ex, i) => `
+                        <div class="example-card" onclick="useExample(${i})">
+                            ${ex}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Use example
+        function useExample(index) {
+            document.getElementById('userInput').value = currentExamples[index];
+            document.getElementById('userInput').focus();
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Typing indicator
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').classList.add('active');
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').classList.remove('active');
+        }
+
+        // Send user message
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            if (!navigator.onLine) {
+                document.getElementById('offlineModal').classList.add('active');
+                return;
+            }
+            
+            input.disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('examplesContainer').innerHTML = '';
+            
+            addMessage(message, 'user');
+            conversationHistory.push({ role: 'user', content: message });
+            input.value = '';
+            
+            turnCount++;
+            updateTurnCounter();
+            
+            showTypingIndicator();
+            
+            await provideFeedback(message);
+            await getNextCharacterMessage();
+            
+            hideTypingIndicator();
+            
+            input.disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+
+        // Provide feedback
+        async function provideFeedback(userMessage) {
+            const prompt = `נתח את התגובה הבאה מבחינת תקשורת בריאה:
+
+"${userMessage}"
+
+הקשר: ${contextNames[selectedContext]}
+התפקיד שהמשתמש מתרגל: ${selectedRole === 'victim' ? 'קורבן' : selectedRole === 'rescuer' ? 'מציל' : 'רודף'}
+
+תן ציון 1-100 וניתוח קצר (2-3 משפטים).
+
+החזר JSON:
+{
+  "score": מספר בין 1-100,
+  "analysis": "ניתוח התגובה",
+  "what_worked": "מה עבד (אם ציון >=60)" או null,
+  "what_to_improve": "מה לשפר (אם ציון <60)" או null
+}`;
+
+            const response = await callClaude([{ role: 'user', content: prompt }]);
+            
+            if (response) {
+                try {
+                    const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
+                    const feedback = JSON.parse(cleaned);
+                    displayFeedback(feedback);
+                } catch (e) {
+                    console.error('Failed to parse feedback:', e);
+                }
+            }
+        }
+
+        // Display feedback
+        function displayFeedback(feedback) {
+            const chatArea = document.getElementById('chatArea');
+            const scoreClass = feedback.score >= 70 ? 'high' : feedback.score >= 40 ? 'medium' : 'low';
+            
+            const feedbackHTML = `
+                <div class="feedback-card">
+                    <div class="feedback-score ${scoreClass}">ציון: ${feedback.score}/100</div>
+                    <div class="feedback-text">${feedback.analysis}</div>
+                    ${feedback.what_worked ? `<div class="feedback-text" style="color: var(--success);">✓ ${feedback.what_worked}</div>` : ''}
+                    ${feedback.what_to_improve ? `<div class="feedback-text" style="color: var(--warning);">→ ${feedback.what_to_improve}</div>` : ''}
+                </div>
+            `;
+            
+            chatArea.innerHTML += feedbackHTML;
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Get next character message
+        async function getNextCharacterMessage() {
+            const conversationContext = conversationHistory.slice(-6).map(m => 
+                `${m.role === 'character' ? 'דמות' : 'משתמש'}: ${m.content}`
+            ).join('\n');
+            
+            const prompt = `אתה ממשיך את השיחה כדמות ב${contextNames[selectedContext]} בתפקיד ${selectedRole === 'victim' ? 'קורבן' : selectedRole === 'rescuer' ? 'מציל' : 'רודף'}.
+
+הקשר השיחה:
+${conversationContext}
+
+כתוב את ההודעה הבאה שלך (5-15 מילים). הישאר בתפקיד ותגיב למה שהמשתמש אמר.
+
+הודעה בלבד, ללא הסברים.`;
+
+            const response = await callClaude([{ role: 'user', content: prompt }]);
+            
+            if (response) {
+                addMessage(response, 'character');
+                conversationHistory.push({ role: 'character', content: response });
+                await generateExamples();
+            }
+        }
+
+        // Update turn counter
+        function updateTurnCounter() {
+            const counter = document.getElementById('turnCounter');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            counter.textContent = `סבב ${turnCount} / 8`;
+            
+            if (turnCount >= 8) {
+                counter.classList.add('complete');
+                finishBtn.classList.add('complete');
+            }
+        }
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Tip modal
+        function showTip() {
+            const roleTips = tips[selectedRole];
+            const tip = roleTips[currentTipIndex];
+            
+            document.getElementById('tipTitle').textContent = `טיפ ${currentTipIndex + 1}/${roleTips.length}`;
+            document.getElementById('tipText').textContent = tip;
+            document.getElementById('tipModal').classList.add('active');
+            
+            currentTipIndex = (currentTipIndex + 1) % roleTips.length;
+        }
+
+        function closeTip() {
+            document.getElementById('tipModal').classList.remove('active');
+        }
+
+        function closeTipModal(event) {
+            if (event.target.id === 'tipModal') {
+                closeTip();
+            }
+        }
+
+        // Offline modal
+        function closeOfflineModal() {
+            document.getElementById('offlineModal').classList.remove('active');
+        }
+
+        // Finish training
+        async function finishTraining() {
+            if (turnCount === 0) {
+                alert('תתחיל אימון לפני שתסיים!');
+                return;
+            }
+            
+            showScreen('analysisScreen');
+            await generateFinalAnalysis();
+        }
+
+        // Generate final analysis
+        async function generateFinalAnalysis() {
+            const conversationText = conversationHistory.map(m => 
+                `${m.role === 'character' ? 'דמות' : 'משתמש'}: ${m.content}`
+            ).join('\n');
+            
+            const prompt = `נתח את האימון הבא:
+
+תפקיד שתורגל: ${selectedRole === 'victim' ? 'קורבן' : selectedRole === 'rescuer' ? 'מציל' : 'רודף'}
+הקשר: ${contextNames[selectedContext]}
+מספר סבבים: ${turnCount}
+
+השיחה:
+${conversationText}
+
+תן ניתוח מקיף עם:
+1. ציון כללי (1-100)
+2. 4 ציונים מפורטים: עמדת בוגר, הצבת גבולות, העברת אחריות, הימנעות מדרמה (כל אחד 1-100)
+3. הרגע הטוב ביותר (משפט אחד)
+4. חוזקות (2-3 נקודות)
+5. תחומים לצמיחה (2-3 נקודות)
+6. המלצה לאימון הבא (משפט אחד)
+
+החזר JSON:
+{
+  "overall_score": מספר,
+  "adult_stance": מספר,
+  "boundaries": מספר,
+  "responsibility": מספר,
+  "avoid_drama": מספר,
+  "best_moment": "טקסט",
+  "strengths": "טקסט",
+  "growth_areas": "טקסט",
+  "next_recommendation": "טקסט"
+}`;
+
+            const response = await callClaude([{ role: 'user', content: prompt }]);
+            
+            if (response) {
+                try {
+                    const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
+                    const analysis = JSON.parse(cleaned);
+                    displayAnalysis(analysis);
+                    saveTrainingSession(analysis);
+                } catch (e) {
+                    console.error('Failed to parse analysis:', e);
+                }
+            }
+        }
+
+        // Display analysis
+        function displayAnalysis(analysis) {
+            document.getElementById('mainScore').textContent = analysis.overall_score;
+            document.getElementById('adultScore').textContent = analysis.adult_stance;
+            document.getElementById('boundariesScore').textContent = analysis.boundaries;
+            document.getElementById('responsibilityScore').textContent = analysis.responsibility;
+            document.getElementById('dramaScore').textContent = analysis.avoid_drama;
+            document.getElementById('bestMoment').textContent = analysis.best_moment;
+            document.getElementById('strengths').textContent = analysis.strengths;
+            document.getElementById('growthAreas').textContent = analysis.growth_areas;
+            document.getElementById('nextRecommendation').textContent = analysis.next_recommendation;
+            
+            displayProgressComparison(analysis);
+        }
+
+        // Save training session
+        function saveTrainingSession(analysis) {
+            const session = {
+                date: new Date().toISOString(),
+                role: selectedRole,
+                context: selectedContext,
+                turns: turnCount,
+                scores: {
+                    overall: analysis.overall_score,
+                    adult_stance: analysis.adult_stance,
+                    boundaries: analysis.boundaries,
+                    responsibility: analysis.responsibility,
+                    avoid_drama: analysis.avoid_drama
+                }
+            };
+            
+            trainingHistory.push(session);
+            localStorage.setItem('trainingHistory', JSON.stringify(trainingHistory));
+            updateHistoryButton();
+        }
+
+        // Load training history
+        function loadTrainingHistory() {
+            const saved = localStorage.getItem('trainingHistory');
+            if (saved) {
+                try {
+                    trainingHistory = JSON.parse(saved);
+                } catch (e) {
+                    trainingHistory = [];
+                }
+            }
+        }
+
+        // Update history button visibility
+        function updateHistoryButton() {
+            const btn = document.getElementById('historyBtn');
+            if (trainingHistory.length > 0) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        // Show history
+        function showHistory() {
+            const modal = document.getElementById('historyModal');
+            const listContainer = document.getElementById('historyList');
+            
+            if (trainingHistory.length === 0) {
+                listContainer.innerHTML = '<div class="empty-history">עדיין אין אימונים שמורים.<br>בוא נתחיל!</div>';
+            } else {
+                const historyHTML = trainingHistory
+                    .slice()
+                    .reverse()
+                    .map((session, index) => {
+                        const actualIndex = trainingHistory.length - 1 - index;
+                        const date = new Date(session.date);
+                        const dateStr = date.toLocaleDateString('he-IL', { 
+                            day: 'numeric', 
+                            month: 'long', 
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        return `
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <div class="history-date">${dateStr}</div>
+                                    <div class="history-score">${session.scores.overall}</div>
+                                </div>
+                                <div class="history-details">
+                                    ${roleNames[session.role]} • ${contextNames[session.context]} • ${session.turns} סבבים
+                                </div>
+                                ${getProgressIndicator(actualIndex)}
+                            </div>
+                        `;
+                    })
+                    .join('');
+                
+                listContainer.innerHTML = `<div class="history-list">${historyHTML}</div>`;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // Get progress indicator
+        function getProgressIndicator(sessionIndex) {
+            if (sessionIndex === 0) return '';
+            
+            const current = trainingHistory[sessionIndex];
+            const previous = trainingHistory[sessionIndex - 1];
+            
+            if (current.role !== previous.role || current.context !== previous.context) {
+                return '';
+            }
+            
+            const improvements = [];
+            const declines = [];
+            
+            for (const [key, value] of Object.entries(current.scores)) {
+                const diff = value - previous.scores[key];
+                if (diff > 5) {
+                    const label = key === 'overall' ? 'ציון כללי' :
+                                 key === 'adult_stance' ? 'עמדת בוגר' :
+                                 key === 'boundaries' ? 'גבולות' :
+                                 key === 'responsibility' ? 'אחריות' :
+                                 'הימנעות מדרמה';
+                    improvements.push(`${label} (+${diff})`);
+                } else if (diff < -5) {
+                    const label = key === 'overall' ? 'ציון כללי' :
+                                 key === 'adult_stance' ? 'עמדת בוגר' :
+                                 key === 'boundaries' ? 'גבולות' :
+                                 key === 'responsibility' ? 'אחריות' :
+                                 'הימנעות מדרמה';
+                    declines.push(`${label} (${diff})`);
+                }
+            }
+            
+            if (improvements.length > 0) {
+                return `<div class="progress-indicator improved">📈 שיפור: ${improvements.join(', ')}</div>`;
+            } else if (declines.length > 0) {
+                return `<div class="progress-indicator declined">📉 ירידה: ${declines.join(', ')}</div>`;
+            }
+            
+            return '';
+        }
+
+        // Display progress comparison in analysis screen
+        function displayProgressComparison(currentAnalysis) {
+            const container = document.getElementById('progressComparison');
+            
+            if (trainingHistory.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const lastSession = trainingHistory[trainingHistory.length - 1];
+            
+            if (lastSession.role !== selectedRole || lastSession.context !== selectedContext) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const improvements = [];
+            const declines = [];
+            
+            const scoreMap = {
+                overall: currentAnalysis.overall_score,
+                adult_stance: currentAnalysis.adult_stance,
+                boundaries: currentAnalysis.boundaries,
+                responsibility: currentAnalysis.responsibility,
+                avoid_drama: currentAnalysis.avoid_drama
+            };
+            
+            for (const [key, value] of Object.entries(scoreMap)) {
+                const diff = value - lastSession.scores[key];
+                if (diff > 5) {
+                    const label = key === 'overall' ? 'ציון כללי' :
+                                 key === 'adult_stance' ? 'עמדת בוגר' :
+                                 key === 'boundaries' ? 'גבולות' :
+                                 key === 'responsibility' ? 'אחריות' :
+                                 'הימנעות מדרמה';
+                    improvements.push(label);
+                } else if (diff < -5) {
+                    const label = key === 'overall' ? 'ציון כללי' :
+                                 key === 'adult_stance' ? 'עמדת בוגר' :
+                                 key === 'boundaries' ? 'גבולות' :
+                                 key === 'responsibility' ? 'אחריות' :
+                                 'הימנעות מדרמה';
+                    declines.push(label);
+                }
+            }
+            
+            let html = '';
+            
+            if (improvements.length > 0) {
+                html += `
+                    <div class="insight-section">
+                        <div class="insight-title">📈 שיפור מהאימון הקודם</div>
+                        <div class="insight-content" style="border-right-color: var(--success);">
+                            כל הכבוד! השתפרת ב: ${improvements.join(', ')}. המשך כך!
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (declines.length > 0) {
+                html += `
+                    <div class="insight-section">
+                        <div class="insight-title">📉 תחומים לתשומת לב</div>
+                        <div class="insight-content" style="border-right-color: var(--warning);">
+                            ירדת קצת ב: ${declines.join(', ')}. כדאי להתמקד בתחומים אלה באימון הבא.
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Close history
+        function closeHistory() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+
+        function closeHistoryModal(event) {
+            if (event.target.id === 'historyModal') {
+                closeHistory();
+            }
+        }
+
+        // Reset simulator
+        function resetSimulator() {
+            selectedRole = null;
+            selectedContext = null;
+            currentTipIndex = 0;
+            turnCount = 0;
+            conversationHistory = [];
+            currentExamples = [];
+            
+            document.getElementById('chatArea').innerHTML = '<div class="loading active" id="initialLoading"><div class="spinner"></div><div>מכין את האימון...</div></div>';
+            document.getElementById('examplesContainer').innerHTML = '';
+            document.getElementById('userInput').value = '';
+            
+            showScreen('setupScreen');
+        }
+
+        // Prevent zoom on double tap for iOS
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
 </body>
 </html>
