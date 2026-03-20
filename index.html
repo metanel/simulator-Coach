@@ -2,9 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>סימולטור תקשורת - אימון משולש הדרמה</title>
     <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -12,7 +10,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
@@ -35,16 +32,13 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 16px;
+            padding: 20px;
             min-height: 100vh;
-            padding-bottom: 80px;
         }
 
         .screen {
@@ -64,13 +58,13 @@
         .card {
             background: var(--surface);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
             border: 1px solid var(--border);
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 12px;
@@ -78,7 +72,7 @@
         }
 
         h2 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--text);
             margin-bottom: 16px;
@@ -94,43 +88,41 @@
         p {
             color: var(--text-dim);
             margin-bottom: 16px;
-            font-size: 15px;
         }
 
         .features {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin: 24px 0;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
         }
 
         .feature {
             background: var(--surface2);
-            padding: 16px;
+            padding: 20px;
             border-radius: 8px;
             text-align: center;
             border: 1px solid var(--border);
             transition: transform 0.2s;
         }
 
-        .feature:active {
-            transform: scale(0.98);
+        .feature:hover {
+            transform: translateY(-2px);
         }
 
         .feature-icon {
             font-size: 32px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .feature-title {
             font-weight: 700;
             color: var(--text);
-            margin-bottom: 6px;
-            font-size: 15px;
+            margin-bottom: 8px;
         }
 
         .feature-desc {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-dim);
         }
 
@@ -138,20 +130,23 @@
             background: var(--accent);
             color: white;
             border: none;
-            padding: 16px 32px;
+            padding: 14px 32px;
             border-radius: 8px;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
             transition: all 0.2s;
             font-family: 'Alef', sans-serif;
-            min-height: 52px;
-            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            background: #1e40af;
+            transform: translateY(-1px);
         }
 
         .btn:active {
-            transform: scale(0.98);
+            transform: translateY(0);
         }
 
         .btn-secondary {
@@ -160,20 +155,23 @@
             border: 1px solid var(--border);
         }
 
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
         .btn-success {
             background: var(--success);
         }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn-success:hover {
+            background: #047857;
         }
 
         .role-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .role-btn {
@@ -184,16 +182,11 @@
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
         }
 
-        .role-btn:active {
-            transform: scale(0.98);
+        .role-btn:hover {
+            border-color: var(--accent);
+            background: var(--surface);
         }
 
         .role-btn.selected {
@@ -203,20 +196,20 @@
         }
 
         .role-icon {
-            font-size: 36px;
+            font-size: 32px;
             margin-bottom: 8px;
         }
 
         .role-name {
             font-weight: 700;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .context-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .context-btn {
@@ -227,16 +220,12 @@
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
-            font-size: 14px;
-            min-height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
+            font-size: 13px;
         }
 
-        .context-btn:active {
-            transform: scale(0.98);
+        .context-btn:hover {
+            border-color: var(--accent2);
+            background: var(--surface);
         }
 
         .context-btn.selected {
@@ -249,13 +238,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px;
+            padding: 12px 16px;
             background: var(--surface);
             border-radius: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             border: 1px solid var(--border);
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
         }
 
         .role-badge {
@@ -274,28 +263,25 @@
             background: var(--accent3);
             color: white;
             border: none;
-            padding: 10px 16px;
+            padding: 8px 16px;
             border-radius: 6px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            min-height: 48px;
-            min-width: 48px;
+            min-height: 44px;
+            min-width: 44px;
             transition: all 0.2s;
             font-family: 'Alef', sans-serif;
-            touch-action: manipulation;
         }
 
-        .tips-btn:active {
-            transform: scale(0.95);
+        .tips-btn:hover {
+            background: #0e7490;
         }
 
         .turn-counter {
             color: var(--text-dim);
             font-size: 13px;
             font-weight: 700;
-            flex: 1;
-            text-align: center;
         }
 
         .turn-counter.complete {
@@ -306,34 +292,31 @@
             background: var(--text-dim);
             color: white;
             border: none;
-            padding: 10px 16px;
+            padding: 8px 16px;
             border-radius: 6px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             font-family: 'Alef', sans-serif;
-            min-height: 48px;
-            touch-action: manipulation;
         }
 
         .finish-btn.complete {
             background: var(--success);
         }
 
-        .finish-btn:active {
-            transform: scale(0.95);
+        .finish-btn:hover {
+            opacity: 0.9;
         }
 
         .chat-area {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            max-height: 60vh;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 500px;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         .message {
@@ -358,9 +341,7 @@
             display: inline-block;
             padding: 12px 16px;
             border-radius: 12px;
-            max-width: 85%;
-            font-size: 15px;
-            line-height: 1.5;
+            max-width: 80%;
         }
 
         .message.character .message-bubble {
@@ -373,52 +354,17 @@
             color: white;
         }
 
-        .typing-indicator {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-dim);
-            font-size: 14px;
-            font-style: italic;
-            margin-bottom: 12px;
-        }
-
-        .typing-indicator.active {
-            display: flex;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-dim);
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
-            30% { transform: translateY(-8px); opacity: 1; }
-        }
-
         .feedback-card {
             background: var(--surface2);
             border: 1px solid var(--border);
             border-right: 4px solid var(--accent3);
-            padding: 14px;
+            padding: 16px;
             border-radius: 8px;
             margin: 16px 0;
         }
 
         .feedback-score {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             margin-bottom: 8px;
         }
@@ -431,61 +377,46 @@
             font-size: 14px;
             color: var(--text);
             margin-bottom: 8px;
-            line-height: 1.6;
         }
 
         .examples-container {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin: 12px 0;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
         }
 
         .example-card {
             background: var(--surface2);
             border: 1px solid var(--border);
-            padding: 14px;
+            padding: 12px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 14px;
-            line-height: 1.5;
-            min-height: 52px;
-            display: flex;
-            align-items: center;
-            touch-action: manipulation;
         }
 
-        .example-card:active {
-            transform: scale(0.98);
+        .example-card:hover {
             border-color: var(--accent);
             background: var(--surface);
+            transform: translateY(-2px);
         }
 
         .input-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            padding: 12px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
-            z-index: 100;
         }
 
         .input-field {
             flex: 1;
-            padding: 14px 16px;
+            padding: 12px 16px;
             border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-family: 'Alef', sans-serif;
             background: var(--surface);
             color: var(--text);
-            min-height: 52px;
         }
 
         .input-field:focus {
@@ -497,20 +428,17 @@
             background: var(--accent);
             color: white;
             border: none;
-            padding: 14px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             font-family: 'Alef', sans-serif;
-            min-height: 52px;
-            min-width: 52px;
-            touch-action: manipulation;
         }
 
-        .send-btn:active {
-            transform: scale(0.95);
+        .send-btn:hover {
+            background: #1e40af;
         }
 
         .send-btn:disabled {
@@ -519,7 +447,190 @@
             opacity: 0.5;
         }
 
-        .tip-modal, .offline-modal, .history-modal {
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            text-align: right;
+        }
+
+        .typing-indicator.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .typing-bubble {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        .typing-dots {
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .typing-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--text-dim);
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingDot {
+            0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+            30% { opacity: 1; transform: translateY(-4px); }
+        }
+
+        .offline-banner {
+            display: none;
+            background: var(--danger);
+            color: white;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .offline-banner.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .history-btn {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Alef', sans-serif;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .history-btn:hover {
+            background: var(--border);
+        }
+
+        .history-list {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-title {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 15px;
+        }
+
+        .history-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .history-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .history-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .progress-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .progress-badge.up {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+        }
+
+        .progress-badge.down {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .progress-comparison {
+            background: var(--surface2);
+            border-right: 4px solid var(--accent3);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent3);
+            margin-bottom: 12px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .tip-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -533,18 +644,16 @@
             padding: 20px;
         }
 
-        .tip-modal.active, .offline-modal.active, .history-modal.active {
+        .tip-modal.active {
             display: flex;
         }
 
-        .modal-content {
+        .tip-content {
             background: var(--surface);
             border-radius: 12px;
             padding: 24px;
             max-width: 500px;
             width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
             position: relative;
             animation: modalIn 0.3s ease-out;
         }
@@ -554,15 +663,15 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        .modal-header {
+        .tip-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
         }
 
-        .modal-title {
-            font-size: 20px;
+        .tip-title {
+            font-size: 18px;
             font-weight: 700;
             color: var(--accent3);
         }
@@ -570,30 +679,29 @@
         .close-btn {
             background: none;
             border: none;
-            font-size: 28px;
+            font-size: 24px;
             cursor: pointer;
             color: var(--text-dim);
-            width: 44px;
-            height: 44px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 4px;
-            touch-action: manipulation;
         }
 
-        .close-btn:active {
+        .close-btn:hover {
             background: var(--surface2);
         }
 
-        .modal-text {
+        .tip-text {
             font-size: 16px;
             color: var(--text);
             margin-bottom: 16px;
             line-height: 1.8;
         }
 
-        .modal-footer {
+        .tip-footer {
             color: var(--text-dim);
             font-size: 13px;
             text-align: center;
@@ -601,65 +709,63 @@
 
         .score-display {
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
         .main-score {
-            font-size: 64px;
+            font-size: 72px;
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 8px;
         }
 
         .score-label {
-            font-size: 16px;
+            font-size: 18px;
             color: var(--text-dim);
         }
 
         .detailed-scores {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 28px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
         .score-card {
             background: var(--surface2);
-            padding: 16px;
+            padding: 20px;
             border-radius: 8px;
             text-align: center;
             border: 1px solid var(--border);
         }
 
         .score-card-value {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .score-card-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-dim);
         }
 
         .insight-section {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .insight-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--accent);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .insight-content {
             background: var(--surface2);
-            padding: 14px;
+            padding: 16px;
             border-radius: 8px;
             border-right: 4px solid var(--accent);
-            font-size: 14px;
-            line-height: 1.6;
         }
 
         .loading {
@@ -688,173 +794,130 @@
             100% { transform: rotate(360deg); }
         }
 
-        .offline-warning {
-            background: var(--warning);
-            color: white;
-            padding: 12px;
-            text-align: center;
-            font-weight: 700;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            display: none;
-            font-size: 14px;
-        }
-
-        .offline-warning.active {
-            display: block;
-        }
-
-        .history-btn {
-            position: fixed;
-            bottom: 80px;
-            left: 16px;
-            background: var(--accent2);
-            color: white;
-            border: none;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 99;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-        }
-
-        .history-btn.active {
-            display: flex;
-        }
-
-        .history-btn:active {
-            transform: scale(0.95);
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .history-item {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .history-date {
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-
-        .history-score {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .history-details {
-            font-size: 13px;
-            color: var(--text-dim);
-            margin-bottom: 8px;
-        }
-
-        .progress-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            margin-top: 8px;
-            padding: 8px;
-            border-radius: 6px;
-        }
-
-        .progress-indicator.improved {
-            background: rgba(5, 150, 105, 0.1);
-            color: var(--success);
-        }
-
-        .progress-indicator.declined {
-            background: rgba(220, 38, 38, 0.1);
-            color: var(--danger);
-        }
-
-        .empty-history {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-dim);
-        }
-
-        @media (min-width: 600px) {
+        @media (max-width: 600px) {
             .container {
-                padding: 20px;
+                padding: 12px;
             }
 
             h1 {
-                font-size: 32px;
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
             }
 
             .features {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: 1fr;
             }
 
-            .role-grid {
-                grid-template-columns: repeat(3, 1fr);
+            .role-grid, .context-grid {
+                grid-template-columns: 1fr;
             }
 
-            .context-grid {
-                grid-template-columns: repeat(3, 1fr);
+            .role-btn, .context-btn {
+                padding: 20px;
+                min-height: 60px;
+                font-size: 15px;
+            }
+
+            .role-icon {
+                font-size: 36px;
             }
 
             .examples-container {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
+            }
+
+            .example-card {
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 16px;
+                font-size: 15px;
+            }
+
+            .main-score {
+                font-size: 48px;
             }
 
             .detailed-scores {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: 1fr 1fr;
             }
 
-            .input-bar {
-                position: relative;
-                background: none;
-                border: none;
-                padding: 0;
+            .status-bar {
+                gap: 8px;
             }
 
-            .container {
-                padding-bottom: 20px;
+            .tips-btn, .finish-btn {
+                min-height: 48px;
+                min-width: 48px;
+                padding: 10px 16px;
+                font-size: 15px;
             }
 
-            .history-btn {
-                bottom: 20px;
+            .input-field {
+                font-size: 16px;
+                padding: 14px 16px;
+                min-height: 48px;
+            }
+
+            .send-btn {
+                min-height: 48px;
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+
+            .btn {
+                min-height: 48px;
+                font-size: 16px;
+                padding: 16px 32px;
+            }
+
+            .message-bubble {
+                font-size: 15px;
+                max-width: 90%;
+            }
+
+            .chat-area {
+                max-height: 400px;
+                padding: 16px;
+            }
+
+            .card {
+                padding: 20px 16px;
+            }
+
+            .tip-content {
+                margin: 20px;
+            }
+
+            .history-item {
+                padding: 14px;
+            }
+
+            .history-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="offline-warning" id="offlineWarning">⚠️ אין חיבור לאינטרנט</div>
-    
-    <button class="history-btn" id="historyBtn" onclick="showHistory()">📊</button>
-
     <div class="container">
+        <!-- Offline Banner -->
+        <div class="offline-banner" id="offlineBanner">
+            ⚠️ אין חיבור לאינטרנט - הסימולטור דורש חיבור לעבודה
+        </div>
+
         <!-- Welcome Screen -->
         <div id="welcomeScreen" class="screen active">
             <div class="card">
                 <h1>🎭 סימולטור תקשורת</h1>
-                <p style="text-align: center; font-size: 17px;">שפר את התקשורת שלך דרך אימון חי</p>
+                <p style="text-align: center; font-size: 18px;">שפר את התקשורת שלך דרך אימון חי</p>
                 
                 <div class="features">
                     <div class="feature">
@@ -869,12 +932,25 @@
                     </div>
                     <div class="feature">
                         <div class="feature-icon">📊</div>
-                        <div class="feature-title">מעקב התקדמות</div>
-                        <div class="feature-desc">היסטוריית אימונים וציונים</div>
+                        <div class="feature-title">ניתוח מסכם</div>
+                        <div class="feature-desc">הבנה מעמיקה של הדפוסים שלך</div>
                     </div>
                 </div>
                 
                 <button class="btn" onclick="startSetup()">בואו נתחיל</button>
+                <button class="history-btn" onclick="showHistory()">📜 היסטוריית אימונים</button>
+            </div>
+        </div>
+
+        <!-- History Screen -->
+        <div id="historyScreen" class="screen">
+            <div class="card">
+                <h2>היסטוריית אימונים</h2>
+                <p>כל האימונים שלך נשמרים כאן</p>
+                
+                <div id="historyList" class="history-list"></div>
+                
+                <button class="btn btn-secondary" onclick="showScreen('welcomeScreen')">חזור</button>
             </div>
         </div>
 
@@ -936,8 +1012,8 @@
         <div id="gameScreen" class="screen">
             <div class="status-bar">
                 <div class="role-badge" id="roleBadge"></div>
-                <button class="tips-btn" onclick="showTip()">💡</button>
-                <div class="turn-counter" id="turnCounter">סבב 0 / 8</div>
+                <button class="tips-btn" onclick="showTip()">💡 טיפים</button>
+                <div class="turn-counter" id="turnCounter">סבב 0 / 8 מומלצים</div>
                 <button class="finish-btn" id="finishBtn" onclick="finishTraining()">סיים</button>
             </div>
 
@@ -949,11 +1025,13 @@
             </div>
 
             <div class="typing-indicator" id="typingIndicator">
-                <span>הדמות כותבת</span>
-                <div class="typing-dots">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
+                <div class="typing-bubble">
+                    <span class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    הדמות כותבת...
                 </div>
             </div>
 
@@ -961,21 +1039,21 @@
 
             <div class="input-bar">
                 <input type="text" class="input-field" id="userInput" placeholder="כתוב את התגובה שלך..." onkeypress="handleKeyPress(event)">
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">📤</button>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">שלח</button>
             </div>
         </div>
 
         <!-- Analysis Screen -->
         <div id="analysisScreen" class="screen">
             <div class="card">
-                <h2 style="text-align: center; margin-bottom: 20px;">ניתוח מסכם</h2>
+                <h2 style="text-align: center; margin-bottom: 24px;">ניתוח מסכם</h2>
+                
+                <div id="progressComparison"></div>
                 
                 <div class="score-display">
                     <div class="main-score" id="mainScore">--</div>
                     <div class="score-label">ציון כללי</div>
                 </div>
-
-                <div id="progressComparison"></div>
 
                 <div class="detailed-scores">
                     <div class="score-card">
@@ -1022,39 +1100,13 @@
 
         <!-- Tip Modal -->
         <div class="tip-modal" id="tipModal" onclick="closeTipModal(event)">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header">
-                    <div class="modal-title" id="tipTitle">טיפ 1/7</div>
+            <div class="tip-content" onclick="event.stopPropagation()">
+                <div class="tip-header">
+                    <div class="tip-title" id="tipTitle">טיפ 1/7</div>
                     <button class="close-btn" onclick="closeTip()">×</button>
                 </div>
-                <div class="modal-text" id="tipText"></div>
-                <div class="modal-footer">לחץ שוב על "💡" לטיפ הבא</div>
-            </div>
-        </div>
-
-        <!-- Offline Modal -->
-        <div class="offline-modal" id="offlineModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title">⚠️ אין חיבור לאינטרנט</div>
-                    <button class="close-btn" onclick="closeOfflineModal()">×</button>
-                </div>
-                <div class="modal-text">
-                    הסימולטור דורש חיבור לאינטרנט כדי לתקשר עם מערכת ה-AI.
-                    אנא בדוק את החיבור שלך ונסה שוב.
-                </div>
-                <button class="btn" onclick="closeOfflineModal()">הבנתי</button>
-            </div>
-        </div>
-
-        <!-- History Modal -->
-        <div class="history-modal" id="historyModal" onclick="closeHistoryModal(event)">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header">
-                    <div class="modal-title">📊 היסטוריית אימונים</div>
-                    <button class="close-btn" onclick="closeHistory()">×</button>
-                </div>
-                <div id="historyList"></div>
+                <div class="tip-text" id="tipText"></div>
+                <div class="tip-footer">לחץ שוב על "💡 טיפים" לטיפ הבא</div>
             </div>
         </div>
     </div>
@@ -1072,7 +1124,60 @@
         let conversationHistory = [];
         let currentExamples = [];
         let trainingHistory = [];
-        let currentSessionScores = null;
+        let currentTrainingStartTime = null;
+
+        // Load training history from localStorage
+        function loadTrainingHistory() {
+            const saved = localStorage.getItem('trainingHistory');
+            if (saved) {
+                try {
+                    trainingHistory = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load history:', e);
+                    trainingHistory = [];
+                }
+            }
+        }
+
+        // Save training history to localStorage
+        function saveTrainingHistory() {
+            try {
+                localStorage.setItem('trainingHistory', JSON.stringify(trainingHistory));
+            } catch (e) {
+                console.error('Failed to save history:', e);
+            }
+        }
+
+        // Initialize offline detection
+        function initOfflineDetection() {
+            function updateOnlineStatus() {
+                const banner = document.getElementById('offlineBanner');
+                if (!navigator.onLine) {
+                    banner.classList.add('active');
+                } else {
+                    banner.classList.remove('active');
+                }
+            }
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTrainingHistory();
+            initOfflineDetection();
+        });
+
+        // Show/hide typing indicator
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').classList.add('active');
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').classList.remove('active');
+        }
 
         // Tips database
         const tips = {
@@ -1092,7 +1197,8 @@
                 "פועל מתוך 'אני בסדר, אתה לא'",
                 "המניע: להרגיש נחוץ ועליונות",
                 "אתגר את הצורך להתערב",
-                "שאל: 'איך זה תורם לי?'"
+                "שאל: 'איך זה תורם לי?'",
+                "הזמן אותו להפוך למאמן"
             ],
             victim: [
                 "עצור לפני שאתה מגיב",
@@ -1121,28 +1227,6 @@
             trainee: 'מאומן'
         };
 
-        // Initialize
-        window.addEventListener('load', function() {
-            loadTrainingHistory();
-            updateHistoryButton();
-            checkOnlineStatus();
-            
-            // Monitor online/offline status
-            window.addEventListener('online', function() {
-                document.getElementById('offlineWarning').classList.remove('active');
-            });
-            
-            window.addEventListener('offline', function() {
-                document.getElementById('offlineWarning').classList.add('active');
-            });
-        });
-
-        function checkOnlineStatus() {
-            if (!navigator.onLine) {
-                document.getElementById('offlineWarning').classList.add('active');
-            }
-        }
-
         // Screen navigation
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1151,6 +1235,61 @@
 
         function startSetup() {
             showScreen('setupScreen');
+        }
+
+        // Show training history
+        function showHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (trainingHistory.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: var(--text-dim); padding: 40px 20px;">עדיין אין אימונים קודמים.<br>התחל את האימון הראשון שלך! 🚀</p>';
+            } else {
+                // Sort by date (newest first)
+                const sortedHistory = [...trainingHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                historyList.innerHTML = sortedHistory.map((training, index) => {
+                    const date = new Date(training.date);
+                    const dateStr = date.toLocaleDateString('he-IL', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const timeStr = date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+                    
+                    // Calculate progress badge if there's a previous training with same role
+                    let progressBadge = '';
+                    const previousTraining = sortedHistory.slice(index + 1).find(t => t.role === training.role);
+                    
+                    if (previousTraining) {
+                        const scoreDiff = training.scores.overall_score - previousTraining.scores.overall_score;
+                        if (scoreDiff > 5) {
+                            progressBadge = `<span class="progress-badge up">↑ +${scoreDiff} מהאימון הקודם</span>`;
+                        } else if (scoreDiff < -5) {
+                            progressBadge = `<span class="progress-badge down">↓ ${scoreDiff} מהאימון הקודם</span>`;
+                        }
+                    }
+                    
+                    return `
+                        <div class="history-item" onclick="viewTrainingDetails(${index})">
+                            <div class="history-header">
+                                <div class="history-title">${roleNames[training.role]} • ${contextNames[training.context]}</div>
+                                <div class="history-score">${training.scores.overall_score}</div>
+                            </div>
+                            <div class="history-meta">
+                                <span>📅 ${dateStr}</span>
+                                <span>🕐 ${timeStr}</span>
+                                <span>💬 ${training.turns} סבבים</span>
+                            </div>
+                            ${progressBadge}
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            showScreen('historyScreen');
+        }
+
+        // View training details (placeholder - can be expanded)
+        function viewTrainingDetails(index) {
+            const sortedHistory = [...trainingHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const training = sortedHistory[index];
+            alert(`פרטי האימון:\n\nתפקיד: ${roleNames[training.role]}\nהקשר: ${contextNames[training.context]}\nציון: ${training.scores.overall_score}\nסבבים: ${training.turns}`);
         }
 
         // Role selection
@@ -1178,26 +1317,31 @@
         async function startTraining() {
             if (!selectedRole || !selectedContext) return;
             
+            // Check internet connection
             if (!navigator.onLine) {
-                document.getElementById('offlineModal').classList.add('active');
+                alert('אין חיבור לאינטרנט. הסימולטור דורש חיבור לעבודה.');
                 return;
             }
             
             showScreen('gameScreen');
             document.getElementById('roleBadge').textContent = roleNames[selectedRole];
             
+            // Initialize conversation
             conversationHistory = [];
             turnCount = 0;
             currentTipIndex = 0;
+            currentTrainingStartTime = new Date();
             updateTurnCounter();
             
+            // Get initial message from character
             await getCharacterMessage();
         }
 
         // API call to Claude
         async function callClaude(messages, systemPrompt = '') {
+            // Check internet connection before calling
             if (!navigator.onLine) {
-                document.getElementById('offlineModal').classList.add('active');
+                alert('אין חיבור לאינטרנט. בדוק את החיבור ונסה שוב.');
                 return null;
             }
 
@@ -1225,11 +1369,7 @@
                 return data.content[0].text;
             } catch (error) {
                 console.error('Claude API Error:', error);
-                if (!navigator.onLine) {
-                    document.getElementById('offlineModal').classList.add('active');
-                } else {
-                    alert('שגיאה בתקשורת עם השרת. אנא בדוק את חיבור האינטרנט ונסה שוב.');
-                }
+                alert('שגיאה בתקשורת עם השרת. אנא בדוק את חיבור האינטרנט ונסה שוב.');
                 return null;
             }
         }
@@ -1295,6 +1435,7 @@
             const container = document.getElementById('examplesContainer');
             const examplesArray = Object.values(examples);
             
+            // Shuffle examples
             for (let i = examplesArray.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [examplesArray[i], examplesArray[j]] = [examplesArray[j], examplesArray[i]];
@@ -1316,7 +1457,6 @@
         // Use example
         function useExample(index) {
             document.getElementById('userInput').value = currentExamples[index];
-            document.getElementById('userInput').focus();
         }
 
         // Add message to chat
@@ -1329,15 +1469,6 @@
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        // Typing indicator
-        function showTypingIndicator() {
-            document.getElementById('typingIndicator').classList.add('active');
-        }
-
-        function hideTypingIndicator() {
-            document.getElementById('typingIndicator').classList.remove('active');
-        }
-
         // Send user message
         async function sendMessage() {
             const input = document.getElementById('userInput');
@@ -1345,29 +1476,39 @@
             
             if (!message) return;
             
+            // Check internet connection
             if (!navigator.onLine) {
-                document.getElementById('offlineModal').classList.add('active');
+                alert('אין חיבור לאינטרנט. בדוק את החיבור ונסה שוב.');
                 return;
             }
             
+            // Disable input
             input.disabled = true;
             document.getElementById('sendBtn').disabled = true;
             document.getElementById('examplesContainer').innerHTML = '';
             
+            // Add user message
             addMessage(message, 'user');
             conversationHistory.push({ role: 'user', content: message });
             input.value = '';
             
+            // Increment turn
             turnCount++;
             updateTurnCounter();
             
+            // Show typing indicator
             showTypingIndicator();
             
+            // Get feedback
             await provideFeedback(message);
+            
+            // Get next character message
             await getNextCharacterMessage();
             
+            // Hide typing indicator
             hideTypingIndicator();
             
+            // Re-enable input
             input.disabled = false;
             document.getElementById('sendBtn').disabled = false;
             input.focus();
@@ -1452,7 +1593,7 @@ ${conversationContext}
             const counter = document.getElementById('turnCounter');
             const finishBtn = document.getElementById('finishBtn');
             
-            counter.textContent = `סבב ${turnCount} / 8`;
+            counter.textContent = `סבב ${turnCount} / 8 מומלצים`;
             
             if (turnCount >= 8) {
                 counter.classList.add('complete');
@@ -1462,8 +1603,7 @@ ${conversationContext}
 
         // Handle Enter key
         function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
+            if (event.key === 'Enter') {
                 sendMessage();
             }
         }
@@ -1490,11 +1630,6 @@ ${conversationContext}
             }
         }
 
-        // Offline modal
-        function closeOfflineModal() {
-            document.getElementById('offlineModal').classList.remove('active');
-        }
-
         // Finish training
         async function finishTraining() {
             if (turnCount === 0) {
@@ -1503,6 +1638,8 @@ ${conversationContext}
             }
             
             showScreen('analysisScreen');
+            
+            // Generate final analysis
             await generateFinalAnalysis();
         }
 
@@ -1548,8 +1685,22 @@ ${conversationText}
                 try {
                     const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
                     const analysis = JSON.parse(cleaned);
+                    
+                    // Save to history
+                    const trainingRecord = {
+                        date: currentTrainingStartTime.toISOString(),
+                        role: selectedRole,
+                        context: selectedContext,
+                        turns: turnCount,
+                        scores: analysis
+                    };
+                    
+                    trainingHistory.push(trainingRecord);
+                    saveTrainingHistory();
+                    
+                    // Display analysis with progress comparison
                     displayAnalysis(analysis);
-                    saveTrainingSession(analysis);
+                    displayProgressComparison(analysis);
                 } catch (e) {
                     console.error('Failed to parse analysis:', e);
                 }
@@ -1567,220 +1718,91 @@ ${conversationText}
             document.getElementById('strengths').textContent = analysis.strengths;
             document.getElementById('growthAreas').textContent = analysis.growth_areas;
             document.getElementById('nextRecommendation').textContent = analysis.next_recommendation;
-            
-            displayProgressComparison(analysis);
         }
 
-        // Save training session
-        function saveTrainingSession(analysis) {
-            const session = {
-                date: new Date().toISOString(),
-                role: selectedRole,
-                context: selectedContext,
-                turns: turnCount,
-                scores: {
-                    overall: analysis.overall_score,
-                    adult_stance: analysis.adult_stance,
-                    boundaries: analysis.boundaries,
-                    responsibility: analysis.responsibility,
-                    avoid_drama: analysis.avoid_drama
-                }
-            };
-            
-            trainingHistory.push(session);
-            localStorage.setItem('trainingHistory', JSON.stringify(trainingHistory));
-            updateHistoryButton();
-        }
-
-        // Load training history
-        function loadTrainingHistory() {
-            const saved = localStorage.getItem('trainingHistory');
-            if (saved) {
-                try {
-                    trainingHistory = JSON.parse(saved);
-                } catch (e) {
-                    trainingHistory = [];
-                }
-            }
-        }
-
-        // Update history button visibility
-        function updateHistoryButton() {
-            const btn = document.getElementById('historyBtn');
-            if (trainingHistory.length > 0) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        }
-
-        // Show history
-        function showHistory() {
-            const modal = document.getElementById('historyModal');
-            const listContainer = document.getElementById('historyList');
-            
-            if (trainingHistory.length === 0) {
-                listContainer.innerHTML = '<div class="empty-history">עדיין אין אימונים שמורים.<br>בוא נתחיל!</div>';
-            } else {
-                const historyHTML = trainingHistory
-                    .slice()
-                    .reverse()
-                    .map((session, index) => {
-                        const actualIndex = trainingHistory.length - 1 - index;
-                        const date = new Date(session.date);
-                        const dateStr = date.toLocaleDateString('he-IL', { 
-                            day: 'numeric', 
-                            month: 'long', 
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                        
-                        return `
-                            <div class="history-item">
-                                <div class="history-header">
-                                    <div class="history-date">${dateStr}</div>
-                                    <div class="history-score">${session.scores.overall}</div>
-                                </div>
-                                <div class="history-details">
-                                    ${roleNames[session.role]} • ${contextNames[session.context]} • ${session.turns} סבבים
-                                </div>
-                                ${getProgressIndicator(actualIndex)}
-                            </div>
-                        `;
-                    })
-                    .join('');
-                
-                listContainer.innerHTML = `<div class="history-list">${historyHTML}</div>`;
-            }
-            
-            modal.classList.add('active');
-        }
-
-        // Get progress indicator
-        function getProgressIndicator(sessionIndex) {
-            if (sessionIndex === 0) return '';
-            
-            const current = trainingHistory[sessionIndex];
-            const previous = trainingHistory[sessionIndex - 1];
-            
-            if (current.role !== previous.role || current.context !== previous.context) {
-                return '';
-            }
-            
-            const improvements = [];
-            const declines = [];
-            
-            for (const [key, value] of Object.entries(current.scores)) {
-                const diff = value - previous.scores[key];
-                if (diff > 5) {
-                    const label = key === 'overall' ? 'ציון כללי' :
-                                 key === 'adult_stance' ? 'עמדת בוגר' :
-                                 key === 'boundaries' ? 'גבולות' :
-                                 key === 'responsibility' ? 'אחריות' :
-                                 'הימנעות מדרמה';
-                    improvements.push(`${label} (+${diff})`);
-                } else if (diff < -5) {
-                    const label = key === 'overall' ? 'ציון כללי' :
-                                 key === 'adult_stance' ? 'עמדת בוגר' :
-                                 key === 'boundaries' ? 'גבולות' :
-                                 key === 'responsibility' ? 'אחריות' :
-                                 'הימנעות מדרמה';
-                    declines.push(`${label} (${diff})`);
-                }
-            }
-            
-            if (improvements.length > 0) {
-                return `<div class="progress-indicator improved">📈 שיפור: ${improvements.join(', ')}</div>`;
-            } else if (declines.length > 0) {
-                return `<div class="progress-indicator declined">📉 ירידה: ${declines.join(', ')}</div>`;
-            }
-            
-            return '';
-        }
-
-        // Display progress comparison in analysis screen
+        // Display progress comparison with previous training
         function displayProgressComparison(currentAnalysis) {
-            const container = document.getElementById('progressComparison');
+            const progressDiv = document.getElementById('progressComparison');
             
-            if (trainingHistory.length === 0) {
-                container.innerHTML = '';
+            // Find previous training with same role
+            const previousTrainings = trainingHistory
+                .filter(t => t.role === selectedRole)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Get the one before current (index 1, because 0 is current)
+            if (previousTrainings.length < 2) {
+                progressDiv.innerHTML = '';
                 return;
             }
             
-            const lastSession = trainingHistory[trainingHistory.length - 1];
+            const previousTraining = previousTrainings[1];
+            const prevScores = previousTraining.scores;
             
-            if (lastSession.role !== selectedRole || lastSession.context !== selectedContext) {
-                container.innerHTML = '';
-                return;
+            // Calculate differences
+            const overallDiff = currentAnalysis.overall_score - prevScores.overall_score;
+            const adultDiff = currentAnalysis.adult_stance - prevScores.adult_stance;
+            const boundariesDiff = currentAnalysis.boundaries - prevScores.boundaries;
+            const responsibilityDiff = currentAnalysis.responsibility - prevScores.responsibility;
+            const dramaDiff = currentAnalysis.avoid_drama - prevScores.avoid_drama;
+            
+            let feedbackHTML = '';
+            
+            // Overall improvement feedback
+            if (overallDiff > 5) {
+                feedbackHTML += `
+                    <div class="progress-comparison">
+                        <div class="progress-title">🎉 התקדמות מרשימה!</div>
+                        <div class="progress-text">
+                            הציון הכללי שלך עלה ב-${overallDiff} נקודות מהאימון הקודם!
+                            ${generateImprovementFeedback(adultDiff, boundariesDiff, responsibilityDiff, dramaDiff)}
+                        </div>
+                    </div>
+                `;
+            } else if (overallDiff < -5) {
+                feedbackHTML += `
+                    <div class="progress-comparison">
+                        <div class="progress-title">💪 תחומים לשיפור</div>
+                        <div class="progress-text">
+                            הציון הכללי ירד ב-${Math.abs(overallDiff)} נקודות מהאימון הקודם.
+                            ${generateDeclineFeedback(adultDiff, boundariesDiff, responsibilityDiff, dramaDiff)}
+                        </div>
+                    </div>
+                `;
             }
             
+            progressDiv.innerHTML = feedbackHTML;
+        }
+
+        // Generate improvement feedback based on specific scores
+        function generateImprovementFeedback(adultDiff, boundariesDiff, responsibilityDiff, dramaDiff) {
             const improvements = [];
+            
+            if (adultDiff > 10) improvements.push('עמדת הבוגר שלך השתפרה משמעותית');
+            if (boundariesDiff > 10) improvements.push('הצבת הגבולות שלך חזקה יותר');
+            if (responsibilityDiff > 10) improvements.push('העברת האחריות שלך יותר ברורה');
+            if (dramaDiff > 10) improvements.push('הצלחת להימנע מדרמה טוב יותר');
+            
+            if (improvements.length === 0) {
+                return 'המשך לעבוד על כל ההיבטים של תקשורת בריאה.';
+            }
+            
+            return '<br><br><strong>החוזקות שלך:</strong><br>• ' + improvements.join('<br>• ');
+        }
+
+        // Generate decline feedback based on specific scores
+        function generateDeclineFeedback(adultDiff, boundariesDiff, responsibilityDiff, dramaDiff) {
             const declines = [];
             
-            const scoreMap = {
-                overall: currentAnalysis.overall_score,
-                adult_stance: currentAnalysis.adult_stance,
-                boundaries: currentAnalysis.boundaries,
-                responsibility: currentAnalysis.responsibility,
-                avoid_drama: currentAnalysis.avoid_drama
-            };
+            if (adultDiff < -10) declines.push('עמדת בוגר - נסה להישאר יותר רציונלי ופחות רגשי');
+            if (boundariesDiff < -10) declines.push('הצבת גבולות - תרגל להגיד "לא" בצורה ברורה');
+            if (responsibilityDiff < -10) declines.push('העברת אחריות - אל תיקח על עצמך את הבעיות של אחרים');
+            if (dramaDiff < -10) declines.push('הימנעות מדרמה - שים לב מתי אתה נכנס למשולש הדרמה');
             
-            for (const [key, value] of Object.entries(scoreMap)) {
-                const diff = value - lastSession.scores[key];
-                if (diff > 5) {
-                    const label = key === 'overall' ? 'ציון כללי' :
-                                 key === 'adult_stance' ? 'עמדת בוגר' :
-                                 key === 'boundaries' ? 'גבולות' :
-                                 key === 'responsibility' ? 'אחריות' :
-                                 'הימנעות מדרמה';
-                    improvements.push(label);
-                } else if (diff < -5) {
-                    const label = key === 'overall' ? 'ציון כללי' :
-                                 key === 'adult_stance' ? 'עמדת בוגר' :
-                                 key === 'boundaries' ? 'גבולות' :
-                                 key === 'responsibility' ? 'אחריות' :
-                                 'הימנעות מדרמה';
-                    declines.push(label);
-                }
+            if (declines.length === 0) {
+                return 'המשך לתרגל והתוצאות ישתפרו.';
             }
             
-            let html = '';
-            
-            if (improvements.length > 0) {
-                html += `
-                    <div class="insight-section">
-                        <div class="insight-title">📈 שיפור מהאימון הקודם</div>
-                        <div class="insight-content" style="border-right-color: var(--success);">
-                            כל הכבוד! השתפרת ב: ${improvements.join(', ')}. המשך כך!
-                        </div>
-                    </div>
-                `;
-            }
-            
-            if (declines.length > 0) {
-                html += `
-                    <div class="insight-section">
-                        <div class="insight-title">📉 תחומים לתשומת לב</div>
-                        <div class="insight-content" style="border-right-color: var(--warning);">
-                            ירדת קצת ב: ${declines.join(', ')}. כדאי להתמקד בתחומים אלה באימון הבא.
-                        </div>
-                    </div>
-                `;
-            }
-            
-            container.innerHTML = html;
-        }
-
-        // Close history
-        function closeHistory() {
-            document.getElementById('historyModal').classList.remove('active');
-        }
-
-        function closeHistoryModal(event) {
-            if (event.target.id === 'historyModal') {
-                closeHistory();
-            }
+            return '<br><br><strong>תחומים לשיפור:</strong><br>• ' + declines.join('<br>• ');
         }
 
         // Reset simulator
@@ -1791,23 +1813,15 @@ ${conversationText}
             turnCount = 0;
             conversationHistory = [];
             currentExamples = [];
+            currentTrainingStartTime = null;
             
             document.getElementById('chatArea').innerHTML = '<div class="loading active" id="initialLoading"><div class="spinner"></div><div>מכין את האימון...</div></div>';
             document.getElementById('examplesContainer').innerHTML = '';
             document.getElementById('userInput').value = '';
+            hideTypingIndicator();
             
             showScreen('setupScreen');
         }
-
-        // Prevent zoom on double tap for iOS
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(event) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
     </script>
 </body>
 </html>
