@@ -380,6 +380,11 @@
             flex-direction: column;
             gap: 20px;
         }
+        
+        .modal-box.large-modal {
+            height: 85%;
+            max-height: 800px;
+        }
 
         .tip-content, .context-content {
             font-size: 18px;
@@ -390,6 +395,31 @@
             justify-content: center;
             font-weight: 500;
             line-height: 1.4;
+        }
+        
+        .book-content {
+            font-size: 16px;
+            text-align: right;
+            line-height: 1.6;
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 10px;
+            color: var(--text-main);
+        }
+        
+        .book-content h4 {
+            color: var(--primary);
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .book-content ul {
+            padding-right: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .book-content li {
+            margin-bottom: 8px;
         }
 
         .tip-nav {
@@ -562,7 +592,89 @@
             </div>
 
             <button class="btn-primary" style="margin-top: auto; flex-shrink: 0;" onclick="startGame()">התחל סימולציה</button>
+            <button class="btn-secondary" style="margin-top: 12px; flex-shrink: 0;" onclick="openBookModal()">📖 טיפים מתוך "איך לרכוש ידידים והשפעה"</button>
+            <button class="btn-secondary" style="margin-top: 12px; flex-shrink: 0;" onclick="openDuhiggModal()">📖 טיפים מתוך "כוחה של שיחה"</button>
             <button class="reset-key-btn" style="align-self: center;" onclick="clearApiKey()">איפוס מפתח API השמור בדפדפן</button>
+        </div>
+    </div>
+
+    <div id="book-modal" class="modal-overlay">
+        <div class="modal-box large-modal">
+            <h3 style="text-align:center; color: var(--primary);">איך לרכוש ידידים והשפעה</h3>
+            <div class="book-content">
+                <p><strong>הנחיה למשתמש:</strong> כאן מופיע תקציר העקרונות. באפשרותך לפתוח את קוד ה-HTML בעורך טקסט, לאתר את רכיב `book-content`, ולהדביק פנימה את הטקסט המלא מהעותק שברשותך לקריאה מעמיקה.</p>
+                <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--border);">
+                
+                <h4>חלק ראשון: טכניקות בסיסיות בטיפול באנשים</h4>
+                <ul>
+                    <li><strong>עיקרון 1:</strong> אל תבקר, אל תגנה ואל תתלונן. ביקורת מעוררת התגוננות ופוגעת בגאווה.</li>
+                    <li><strong>עיקרון 2:</strong> תן הערכה כנה ואמיתית. הרצון העמוק ביותר של האדם הוא להרגיש חשוב.</li>
+                    <li><strong>עיקרון 3:</strong> עורר באדם האחר רצון עז. דבר על מה שהם רוצים, והראה להם כיצד להשיג זאת.</li>
+                </ul>
+
+                <h4>חלק שני: שש דרכים לחבב את עצמך על אנשים</h4>
+                <ul>
+                    <li><strong>עיקרון 1:</strong> גלה עניין אמיתי באנשים אחרים.</li>
+                    <li><strong>עיקרון 2:</strong> חְיֵך.</li>
+                    <li><strong>עיקרון 3:</strong> זכור ששמו של אדם הוא הצליל המתוק והחשוב ביותר עבורו.</li>
+                    <li><strong>עיקרון 4:</strong> היה סבלני וקשוב. עודד אחרים לדבר על עצמם.</li>
+                    <li><strong>עיקרון 5:</strong> דבר במונחים של תחומי העניין של האדם האחר.</li>
+                    <li><strong>עיקרון 6:</strong> גרום לאדם האחר להרגיש חשוב - ועשה זאת בכנות.</li>
+                </ul>
+
+                <h4>חלק שלישי: איך לרתום אנשים לדרך החשיבה שלך</h4>
+                <ul>
+                    <li><strong>עיקרון 1:</strong> הדרך היחידה להפיק את המיטב מויכוח היא להימנע ממנו.</li>
+                    <li><strong>עיקרון 2:</strong> הראה כבוד לדעותיו של האחר. לעולם אל תאמר "אתה טועה".</li>
+                    <li><strong>עיקרון 3:</strong> אם טעית, הודה בכך מהר ובאופן נחרץ.</li>
+                    <li><strong>עיקרון 4:</strong> התחל בדרך ידידותית.</li>
+                    <li><strong>עיקרון 5:</strong> גרום לאדם האחר לומר "כן, כן" מיד בהתחלה.</li>
+                </ul>
+                
+                <p style="margin-top: 20px;"><em>(שטח זה מיועד להזנת מאמרים ופרקים שלמים לנוחיותך)</em></p>
+            </div>
+            <button class="btn-primary" onclick="closeBookModal()">סגור</button>
+        </div>
+    </div>
+
+    <div id="duhigg-modal" class="modal-overlay">
+        <div class="modal-box large-modal">
+            <h3 style="text-align:center; color: var(--primary);">כוחה של שיחה / צ'רלס דוהיג</h3>
+            <div class="book-content">
+                <p><strong>הנחיה למשתמש:</strong> כאן מופיע תקציר העקרונות מספר זה. באפשרותך לפתוח את קוד ה-HTML בעורך טקסט, לאתר את מזהה ה-`duhigg-modal`, ולהדביק פנימה את הטקסט המלא לצרכיך האישיים.</p>
+                <hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--border);">
+                
+                <h4>שלושת סוגי השיחות</h4>
+                <p>על פי הספר, כל אינטראקציה נופלת בדרך כלל לאחת משלוש קטגוריות. הבעיות מתחילות כשאנשים מנהלים סוגים שונים של שיחות באותו הזמן.</p>
+                <ul>
+                    <li><strong>השיחה המעשית ("על מה זה באמת?"):</strong> שיחה לוגית שמטרתה לפתור בעיות, לקבל החלטות או לשתף מידע טכני.</li>
+                    <li><strong>השיחה הרגשית ("איך אנחנו מרגישים?"):</strong> שיחה שמטרתה הכלה, אמפתיה ושיתוף רגשות, ללא צורך בפתרון מיידי.</li>
+                    <li><strong>השיחה החברתית/זהותית ("מי אנחנו?"):</strong> שיחה שעוסקת במעמד, מערכות יחסים, איך אנו נתפסים בחברה והערכים שלנו.</li>
+                </ul>
+
+                <h4>עקרון ההתאמה (The Matching Principle)</h4>
+                <ul>
+                    <li>כדי לתקשר בהצלחה, עליך לזהות באיזה סוג שיחה נמצא הצד השני - <strong>ולהתאים את עצמך אליו</strong>.</li>
+                    <li>אם מישהו משתף רגש (שיחה רגשית), אסור לענות לו עם פתרון טכני (שיחה מעשית). יש קודם להראות אמפתיה ורק לאחר מכן, אם מתאים, לעבור לפתרון.</li>
+                </ul>
+
+                <h4>שאלות עמוקות (Deep Questions)</h4>
+                <ul>
+                    <li>במקום לשאול שאלות על עובדות (למשל, "איפה אתה עובד?"), שאל שאלות שחושפות ערכים, חוויות או אמונות (למשל, "מה אתה הכי אוהב במה שאתה עושה?").</li>
+                    <li>שאלות עמוקות מזמינות את האדם השני לשתף משהו מהותי על עצמו ומעודדות חיבור אמיתי.</li>
+                </ul>
+
+                <h4>לולאת ההבנה (Looping for Understanding)</h4>
+                <p>טכניקה יעילה במיוחד במצבי קונפליקט כדי להוכיח לצד השני שבאמת מקשיבים לו:</p>
+                <ol>
+                    <li><strong>שאל שאלה:</strong> בקש מהצד השני להסביר את עמדתו.</li>
+                    <li><strong>חזור על דבריו:</strong> סכם את מה שאמר במילים שלך, מבלי להוסיף ביקורת או דעה משלך.</li>
+                    <li><strong>שאל אם הבנת נכון:</strong> "האם סיכמתי נכון את מה שאתה מרגיש?" אל תמשיך הלאה עד שתקבל אישור.</li>
+                </ol>
+                
+                <p style="margin-top: 20px;"><em>(שטח זה מיועד להזנת מאמרים ופרקים שלמים לנוחיותך)</em></p>
+            </div>
+            <button class="btn-primary" onclick="closeDuhiggModal()">סגור</button>
         </div>
     </div>
 
@@ -1136,7 +1248,6 @@ Return ONLY a JSON object with this structure (in Hebrew):
         document.getElementById('tip-indicator').innerText = `${state.currentTipIndex + 1}/${tips.length}`;
     }
 
-    // --- Context Modal Logic ---
     function openContextModal() {
         state.currentContextIndex = 0;
         updateContextUI();
@@ -1172,6 +1283,22 @@ Return ONLY a JSON object with this structure (in Hebrew):
         } else {
             document.getElementById('context-title').innerText = "הנחיה פרקטית ליישום";
         }
+    }
+
+    function openBookModal() {
+        document.getElementById('book-modal').classList.add('active');
+    }
+
+    function closeBookModal() {
+        document.getElementById('book-modal').classList.remove('active');
+    }
+    
+    function openDuhiggModal() {
+        document.getElementById('duhigg-modal').classList.add('active');
+    }
+
+    function closeDuhiggModal() {
+        document.getElementById('duhigg-modal').classList.remove('active');
     }
 
     // --- Analysis Logic ---
