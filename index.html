@@ -81,7 +81,6 @@
             display: flex;
         }
 
-        /* Welcome & API Key Screens */
         .center-container {
             padding: 24px;
             display: flex;
@@ -122,7 +121,6 @@
             direction: ltr;
         }
 
-        /* Setup Screen */
         .setup-container {
             padding: 24px;
             display: flex;
@@ -169,7 +167,6 @@
             font-weight: normal;
         }
 
-        /* Game Screen */
         .game-header {
             display: flex;
             flex-direction: column;
@@ -324,7 +321,6 @@
             justify-content: center;
         }
 
-        /* Modals */
         .modal-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -348,20 +344,15 @@
             gap: 20px;
         }
 
-        .tip-content {
+        .tip-content, .context-content {
             font-size: 18px;
             text-align: center;
-            min-height: 80px;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 500;
-        }
-
-        .context-content {
-            font-size: 16px;
-            text-align: right;
-            line-height: 1.6;
+            line-height: 1.4;
         }
 
         .tip-nav {
@@ -380,7 +371,6 @@
             color: var(--text-light);
         }
 
-        /* Analysis Screen */
         .analysis-container {
             padding: 24px;
             overflow-y: auto;
@@ -432,7 +422,6 @@
         .insight-card h4 { margin-bottom: 8px; color: var(--primary); }
         .insight-card p { font-size: 15px; line-height: 1.5; }
 
-        /* Loader */
         .loader-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -568,8 +557,13 @@
 
         <div id="context-modal" class="modal-overlay">
             <div class="modal-box">
-                <h3 style="text-align:center; color: var(--primary);">ציפייה בריאה מהקשר</h3>
+                <h3 id="context-title" style="text-align:center; color: var(--primary);">ציפייה מהקשר</h3>
                 <div id="context-content" class="context-content">טקסט ציפייה</div>
+                <div class="tip-nav">
+                    <button class="btn-secondary" onclick="prevContextTip()">קודם</button>
+                    <span id="context-indicator" class="tip-indicator">1/4</span>
+                    <button class="btn-secondary" onclick="nextContextTip()">הבא</button>
+                </div>
                 <button class="btn-primary" onclick="closeContextModal()">סגור</button>
             </div>
         </div>
@@ -682,14 +676,49 @@
         coachee: "מאומן"
     };
 
-    const CONTEXT_EXPECTATIONS = {
-        romantic: "בזוגיות בריאה, הציפייה היא לשותפות שוויונית, פגיעות הדדית, תמיכה רגשית ותקשורת פתוחה. מותר לצפות לאינטימיות ומחויבות, אך כל צד אחראי לרגשותיו ולצרכיו ואין לצפות שהצד השני \"יציל\" אותך מעצמך.",
-        family: "במשפחה, הציפייה היא לקבלה ותמיכה בסיסית, אך עם גבולות ברורים בין אינדיבידואלים. ההורים אחראים לילדים (עד בגרות), אך בוגרים אחראים לעצמם. מותר לא להסכים, לשמור על עצמאות ולא לקחת אחריות על בחירות של בני משפחה אחרים.",
-        work: "בסביבת עבודה, הציפייה היא למקצועיות, עמידה ביעדים, שיתוף פעולה ענייני וכבוד הדדי. אין חובה לספק תמיכה רגשית עמוקה, והגבולות מוגדרים על ידי תפקידים, אחריות ונהלים.",
-        friendship: "בחברות, הציפייה היא להדדיות, הנאה משותפת, בחירה חופשית ותמיכה. זהו קשר וולונטרי, ולכן הציפייה היא לאיזון בנתינה ובקבלה ללא תלות מוחלטת או דרישה למחויבות נוקשה.",
-        client: "מול לקוח, הציפייה היא למתן שירות מקצועי בהתאם להסכם מוגדר, שקיפות, ואדיבות. הלקוח מצפה לפתרון או שירות, ובעל המקצוע מצפה לתגמול הולם ויחס מכבד. הגבולות הם עסקיים לחלוטין ואין מקום למעורבות רגשית עודפת.",
-        employee: "מול עובד, הציפייה היא לביצוע התפקיד, אחריות, ולמידה. מנגד, לעובד יש ציפייה לסביבת עבודה בטוחה, הוגנת, משוב ברור ותגמול. הקשר מבוסס על סמכות מוגדרת וחוזה עבודה, ולא על מערכת יחסים הורית.",
-        coachee: "מול מאומן, הציפייה היא למחויבות לתהליך וללמידה מצד המאומן. מצד המאמן, הציפייה היא לשיקוף, אתגור, שמירה על גבולות התהליך ואמונה ביכולת המאומן. המאמן אינו פותר את הבעיות אלא מלווה את המאומן בפתרונן באופן בוגר ואחראי."
+    const CONTEXT_DATA = {
+        romantic: [
+            "בזוגיות בריאה, הציפייה היא לשותפות שוויונית, פגיעות הדדית ותקשורת פתוחה. כל צד אחראי לרגשותיו ואין לצפות שהצד השני 'יציל' אותך.",
+            "השתמש במשפטי 'אני מרגיש' במקום להאשים את בן/בת הזוג בתחושותיך (למשל: 'אני מרגיש עומס' במקום 'אתה מעמיס עליי').",
+            "שאל 'האם אתה מעוניין בעצה או רק באוזן קשבת?' לפני הצעת פתרונות אופרטיביים.",
+            "קח פסק זמן יזום של 20 דקות לפחות כאשר השיחה הופכת לסוערת ואימפולסיבית לפני שתגיב."
+        ],
+        family: [
+            "במשפחה, הציפייה היא לקבלה בסיסית, אך עם גבולות. בוגרים אחראים לעצמם. מותר לשמור על עצמאות ולא לקחת אחריות על בחירות של בני משפחה אחרים.",
+            "סרב טקטית לקחת אחריות על ביצוע משימות או קבלת החלטות שבן המשפחה הבוגר מסוגל לבצע בעצמו.",
+            "הגדר נושאים מחוץ לתחום: עצור שיחות על בחירות חיים באמירה 'אני בוחר שלא לדון בנושא זה כעת'.",
+            "הימנע טריאנגולציה: אל תשמש כמתווך או כמעביר מסרים בסכסוכים בין בני משפחה אחרים."
+        ],
+        work: [
+            "בסביבת עבודה, הציפייה היא למקצועיות, עמידה ביעדים ושיתוף פעולה ענייני. הגבולות מוגדרים על ידי תפקידים ואחריות, ללא חובה לתמיכה רגשית עמוקה.",
+            "החזר את השיח ליעדים העסקיים או המקצועיים בכל פעם שהצד השני עובר לפסים אישיים או רגשיים.",
+            "סכם החלטות וחלוקת תפקידים בכתב בסוף כל אינטראקציה כדי למנוע פרשנויות אישיות בהמשך.",
+            "השתמש בשפה עובדתית ומקצועית בלבד ללא שילוב פרשנות פסיכולוגית על מניעי הקולגה."
+        ],
+        friendship: [
+            "בחברות, הציפייה היא להדדיות, בחירה חופשית ותמיכה. הציפייה היא לאיזון בנתינה ובקבלה ללא תלות מוחלטת או מניפולציות.",
+            "ודא שזמן הדיבור וההקשבה מתחלק באופן סביר, ואל תאפשר לצד אחד לשאוב את כל תשומת הלב ללא מענה.",
+            "הפנה את החבר לגורם מקצועי כאשר הוא מעלה מצוקות כרוניות החורגות מיכולת ההכלה של קשר חברי.",
+            "כבד סירוב להזמנה או חוסר זמינות זמני באמירה 'הכל בסדר, נדבר בהמשך' ללא דרישת הסברים."
+        ],
+        client: [
+            "מול לקוח, הציפייה היא לשירות מקצועי בהתאם להסכם מוגדר. הגבולות הם עסקיים לחלוטין ואין מקום למעורבות רגשית עודפת.",
+            "הפנה את הלקוח לתנאי השירות או לחוזה המקורי בכל פעם שעולות דרישות החורגות מהגבולות שהוגדרו.",
+            "הגדר זמני מענה מדויקים (למשל 'אשיב תוך יום עסקים') ואל תחרוג מהם גם אם נשלחות הודעות דחופות.",
+            "הגב באדיבות עניינית וקצרה לתלונות, מבלי לקחת את הכעס באופן אישי או להתגונן ממושכות."
+        ],
+        employee: [
+            "מול עובד, הציפייה היא לביצוע התפקיד, אחריות ולמידה, בתמורה לסביבה בטוחה ותגמול. הקשר מבוסס על סמכות מוגדרת ולא על יחס הורי.",
+            "הצג נתונים אובייקטיביים ועובדות על ביצועים והתנהגות במקום להעביר ביקורת על תכונות אופי.",
+            "הגדר את התוצאה הרצויה בבירור והשאר לעובד את האחריות המלאה לבחור את הדרך ליישם אותה.",
+            "אל תתערב (מיקרו-ניהול) בתהליך העבודה כל עוד העובד עומד ביעדים ובזמני האספקה שהוגדרו מראש."
+        ],
+        coachee: [
+            "מול מאומן, הציפייה היא למחויבות לתהליך. המאמן אינו פותר את הבעיות אלא מלווה את המאומן, משקף, ומאתגר תוך שמירה על גבולות.",
+            "השתמש בשאלות כגון 'מהן האפשרויות הפתוחות בפניך כעת?' כדי להעביר את מוקד השליטה למאומן.",
+            "החזר דילמות למאומן באמירה 'איך אתה היית בוחר לפעול במצב כזה?' במקום לספק עצות ישירות.",
+            "הגדר משימה פרקטית בסיום כל שיחה שעל המאומן לבצע בעצמו ולדווח עליה עד לפגישה הבאה."
+        ]
     };
 
     const TIPS = {
@@ -730,6 +759,7 @@
         turnCount: 0,
         chatHistory: [],
         currentTipIndex: 0,
+        currentContextIndex: 0,
         systemPrompt: ''
     };
 
@@ -803,7 +833,6 @@
         
         document.getElementById('role-badge').innerText = ROLE_NAMES[state.role];
         document.getElementById('context-badge-btn').innerText = `הקשר: ${CONTEXT_NAMES[state.context]}`;
-        document.getElementById('context-content').innerText = CONTEXT_EXPECTATIONS[state.context];
 
         updateTurnCounter();
         document.getElementById('chat-area').innerHTML = '';
@@ -1021,12 +1050,42 @@ Return ONLY a JSON object with this structure (in Hebrew):
         document.getElementById('tip-indicator').innerText = `${state.currentTipIndex + 1}/${tips.length}`;
     }
 
+    // --- Context Modal Logic ---
     function openContextModal() {
+        state.currentContextIndex = 0;
+        updateContextUI();
         document.getElementById('context-modal').classList.add('active');
     }
 
     function closeContextModal() {
         document.getElementById('context-modal').classList.remove('active');
+    }
+
+    function nextContextTip() {
+        const contextArray = CONTEXT_DATA[state.context];
+        if (state.currentContextIndex < contextArray.length - 1) {
+            state.currentContextIndex++;
+            updateContextUI();
+        }
+    }
+
+    function prevContextTip() {
+        if (state.currentContextIndex > 0) {
+            state.currentContextIndex--;
+            updateContextUI();
+        }
+    }
+
+    function updateContextUI() {
+        const contextArray = CONTEXT_DATA[state.context];
+        document.getElementById('context-content').innerText = contextArray[state.currentContextIndex];
+        document.getElementById('context-indicator').innerText = `${state.currentContextIndex + 1}/${contextArray.length}`;
+        
+        if (state.currentContextIndex === 0) {
+            document.getElementById('context-title').innerText = "ציפייה כללית מהקשר";
+        } else {
+            document.getElementById('context-title').innerText = "הנחיה פרקטית ליישום";
+        }
     }
 
     // --- Analysis Logic ---
