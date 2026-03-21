@@ -206,11 +206,21 @@
 
         .badges-group {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
         .role-badge {
             background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .name-badge {
+            background: var(--secondary);
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
@@ -234,6 +244,7 @@
             font-size: 14px;
             font-weight: 600;
             color: var(--secondary);
+            white-space: nowrap;
         }
         .round-counter.success { color: var(--success); }
 
@@ -542,6 +553,14 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <label>בחר את מגדר הדמות:</label>
+                <select id="gender-select">
+                    <option value="male">גבר</option>
+                    <option value="female">אישה</option>
+                </select>
+            </div>
+
             <button class="btn-primary" style="margin-top: auto; flex-shrink: 0;" onclick="startGame()">התחל סימולציה</button>
             <button class="reset-key-btn" style="align-self: center;" onclick="clearApiKey()">איפוס מפתח API השמור בדפדפן</button>
         </div>
@@ -553,10 +572,11 @@
                 <div class="badges-group">
                     <span id="role-badge" class="role-badge">תפקיד</span>
                     <button id="context-badge-btn" class="context-badge" onclick="openContextModal()">הקשר</button>
+                    <span id="name-badge" class="name-badge">שם</span>
                 </div>
-                <span id="round-counter" class="round-counter">סבב 0/8 מומלצים</span>
+                <span id="round-counter" class="round-counter">סבב 0/8</span>
             </div>
-            <div class="header-actions">
+            <div class="header-actions" style="margin-top: 8px;">
                 <button class="btn-secondary" onclick="openTips()">💡 טיפים</button>
                 <button class="btn-secondary" style="color: var(--danger); border-color: var(--danger);" onclick="endGame()">סיום משחק</button>
             </div>
@@ -707,6 +727,11 @@
         coachee: "מאומן"
     };
 
+    const CHARACTER_NAMES = {
+        male: ["יוסי", "דני", "רון", "עידן", "עומר", "איתי", "רועי", "גלעד", "נדב", "תומר"],
+        female: ["יעל", "מיכל", "נועה", "שירה", "רוני", "מאיה", "תמר", "עדי", "טלי", "קרן"]
+    };
+
     const CONTEXT_DATA = {
         romantic: [
             "בזוגיות בריאה, הציפייה היא לשותפות שוויונית, פגיעות הדדית ותקשורת פתוחה. כל צד אחראי לרגשותיו ואין לצפות שהצד השני 'יציל' אותך.",
@@ -794,6 +819,8 @@
     let state = {
         role: '',
         context: '',
+        gender: '',
+        characterName: '',
         turnCount: 0,
         chatHistory: [],
         currentTipIndex: 0,
@@ -863,14 +890,23 @@
     }
 
     // --- Game Logic ---
+    function getRandomName(gender) {
+        const names = CHARACTER_NAMES[gender];
+        const randomIndex = Math.floor(Math.random() * names.length);
+        return names[randomIndex];
+    }
+
     async function startGame() {
         state.role = document.getElementById('role-select').value;
         state.context = document.getElementById('context-select').value;
+        state.gender = document.getElementById('gender-select').value;
+        state.characterName = getRandomName(state.gender);
         state.turnCount = 0;
         state.chatHistory = [];
         
         document.getElementById('role-badge').innerText = ROLE_NAMES[state.role];
         document.getElementById('context-badge-btn').innerText = `הקשר: ${CONTEXT_NAMES[state.context]}`;
+        document.getElementById('name-badge').innerText = state.characterName;
 
         updateTurnCounter();
         document.getElementById('chat-area').innerHTML = '';
@@ -881,12 +917,14 @@
         if (state.role === 'combined') {
             roleInstruction = `The user is practicing staying in the Adult state. You must act as the counterpart and dynamically switch your drama role (Victim, Rescuer, Persecutor) every 1-2 turns. Shift unpredictably between blaming (Persecutor), acting helpless (Victim), or offering unwanted fixing (Rescuer) to pull them into the drama.`;
         }
+        
+        const genderPrompt = state.gender === 'male' ? "man" : "woman";
 
         state.systemPrompt = `You are a character in a Karpman Drama Triangle communication simulator.
+Your name is ${state.characterName} and you are a ${genderPrompt}. Speak in Hebrew using the correct grammatical gender for yourself.
 ${roleInstruction}
 The context of the relationship is: ${state.context}.
-You will speak in Hebrew. 
-Act naturally as the counterpart character trying to pull the user into the drama.`;
+Act naturally as the counterpart character trying to pull the user into the drama. The user may address you by your name (${state.characterName}).`;
 
         showScreen('game-screen');
         showLoader(true);
