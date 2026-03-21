@@ -934,10 +934,15 @@ Return ONLY a JSON object with this structure:
 
         showLoader(true);
 
+        let roleInstruction = `3. Generate your character's next response to continue the conversation (stay in the ${state.role} role).`;
+        if (state.role === 'combined') {
+            roleInstruction = `3. IMPORTANT: You are in "combined" mode. You MUST dynamically switch your drama role right now. If your last message was from a Victim perspective, switch to Persecutor or Rescuer. Generate your next response from this NEW drama role to challenge the user.`;
+        }
+
         const evaluationPrompt = `The user just replied: "${inputStr}".
 1. Evaluate their response (score 1-100 on how well they stayed in the Adult state and avoided drama).
 2. Provide a brief analysis and what worked or what to improve (in Hebrew).
-3. Generate your character's next response to continue the conversation.
+${roleInstruction}
 4. Generate 4 new response examples for the user's next turn (victim, rescuer, persecutor, adult - 5-10 words each).
 
 Return ONLY a JSON object with this structure:
