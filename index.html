@@ -2,1335 +2,986 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>סימולטור תקשורת - אימון בזמן אמת</title>
-    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>סימולטור תקשורת - משולש הדרמה</title>
     <style>
-        /* CSS Variables - Professional Business Style */
         :root {
-            --bg: #f5f5f5;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #475569;
+            --bg-color: #f8fafc;
             --surface: #ffffff;
-            --surface2: #fafafa;
-            --border: #e0e0e0;
-            --accent: #1e3a8a;
-            --accent2: #059669;
-            --accent3: #0891b2;
-            --text: #1f2937;
-            --text-dim: #6b7280;
-            --success: #059669;
-            --warning: #f59e0b;
-            --error: #dc2626;
+            --text-main: #0f172a;
+            --text-light: #64748b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --font-base: 16px;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
-            font-family: 'Alef', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-size: var(--font-base);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            min-height: 44px;
+            padding: 12px 20px;
         }
 
-        /* Screen Management */
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:active {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--surface);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            width: 100%;
+        }
+
         .screen {
             display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 428px;
+            margin: 0 auto;
+            background: var(--surface);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
         .screen.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
+            display: flex;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Welcome Screen */
-        .welcome-header {
+        /* Welcome & API Key Screens */
+        .center-container {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
             text-align: center;
-            margin-bottom: 50px;
-            padding-top: 40px;
+            overflow-y: auto;
         }
-
-        .welcome-header h1 {
-            font-size: 2.5rem;
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .welcome-header p {
-            font-size: 1.2rem;
-            color: var(--text-dim);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+        
+        .center-container h1, .center-container h2 {
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: var(--primary);
         }
 
         .feature-card {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
+            background: var(--bg-color);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            width: 100%;
+            border: 1px solid var(--border);
         }
 
-        .feature-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
-        }
+        .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-light); }
 
-        .feature-card .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .feature-card h3 {
-            color: var(--accent);
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-        }
-
-        .feature-card p {
-            color: var(--text-dim);
-            font-size: 0.95rem;
-        }
-
-        /* Buttons */
-        .btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 6px;
-            font-size: 1.1rem;
-            font-family: 'Alef', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn:hover {
-            background: #1e40af;
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
-        }
-
-        .btn-center {
-            display: block;
-            margin: 0 auto;
+        .api-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-size: 16px;
+            text-align: left;
+            direction: ltr;
         }
 
         /* Setup Screen */
-        .setup-section {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 25px;
+        .setup-container {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
         }
 
-        .setup-section h2 {
-            color: var(--accent);
+        .setup-container h2 {
+            font-size: 24px;
             margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .option-card {
-            background: var(--surface2);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            padding: 20px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .option-card:hover {
-            border-color: var(--accent);
-            background: var(--surface);
+        .form-group {
+            margin-bottom: 24px;
         }
 
-        .option-card.selected {
-            border-color: var(--accent);
-            background: var(--accent);
-            color: white;
-        }
-
-        .option-card .emoji {
-            font-size: 2.5rem;
+        .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-weight: 600;
         }
 
-        .option-card .label {
-            font-size: 1rem;
-            font-weight: 600;
+        select {
+            width: 100%;
+            min-height: 44px;
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-size: 16px;
+            background: var(--bg-color);
+        }
+
+        .reset-key-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            text-decoration: underline;
+            font-size: 14px;
+            padding: 0;
+            min-height: auto;
+            margin-top: 16px;
+            font-weight: normal;
         }
 
         /* Game Screen */
         .game-header {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            padding: 16px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
+            align-items: center;
         }
 
         .role-badge {
-            background: var(--accent);
+            background: var(--primary);
             color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tips-btn {
-            background: var(--accent2);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1.1rem;
-            font-family: 'Alef', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            min-height: 44px;
-            min-width: 44px;
-        }
-
-        .tips-btn:hover {
-            background: #047857;
         }
 
         .round-counter {
-            background: var(--surface2);
-            padding: 8px 16px;
-            border-radius: 6px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text);
+            color: var(--secondary);
         }
+        .round-counter.success { color: var(--success); }
 
-        .round-counter.complete {
-            background: var(--success);
-            color: white;
-        }
-
-        .finish-btn {
-            background: var(--text-dim);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: 'Alef', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .finish-btn.ready {
-            background: var(--success);
-        }
-
-        .finish-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Chat Area */
-        .chat-container {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            padding: 25px;
-            margin-bottom: 20px;
-            height: 500px;
-            overflow-y: auto;
-        }
-
-        .message {
-            margin-bottom: 20px;
-            animation: messageSlide 0.3s ease-in;
-        }
-
-        @keyframes messageSlide {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .message.character {
-            text-align: left;
-        }
-
-        .message.user {
-            text-align: right;
-        }
-
-        .message-content {
-            display: inline-block;
-            max-width: 75%;
-            padding: 15px 20px;
-            border-radius: 6px;
-            line-height: 1.5;
-        }
-
-        .message.character .message-content {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        .message.user .message-content {
-            background: var(--accent);
-            color: white;
-        }
-
-        .feedback-card {
-            background: var(--surface2);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            padding: 20px;
-            margin: 15px 0;
-        }
-
-        .feedback-score {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-
-        .feedback-score.high { color: var(--success); }
-        .feedback-score.medium { color: var(--warning); }
-        .feedback-score.low { color: var(--error); }
-
-        .feedback-text {
-            color: var(--text);
-            margin-bottom: 10px;
-        }
-
-        /* Examples */
-        .examples-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .example-btn {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Alef', sans-serif;
-            font-size: 0.95rem;
-            color: var(--text);
-        }
-
-        .example-btn:hover {
-            border-color: var(--accent);
-            background: var(--surface2);
-        }
-
-        /* Input Area */
-        .input-container {
+        .header-actions {
             display: flex;
             gap: 12px;
         }
-
-        .input-field {
+        
+        .header-actions button {
             flex: 1;
-            padding: 15px;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-family: 'Alef', sans-serif;
-            font-size: 1rem;
-            background: var(--surface);
-            color: var(--text);
+            min-height: 44px;
+            padding: 8px;
+            font-size: 14px;
         }
 
-        .input-field:focus {
-            outline: none;
-            border-color: var(--accent);
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: var(--bg-color);
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message.bot {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            align-self: flex-start;
+            border-top-right-radius: 4px;
+        }
+
+        .message.user {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-top-left-radius: 4px;
+        }
+
+        .feedback-bubble {
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            align-self: center;
+            max-width: 90%;
+            text-align: center;
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .examples-container {
+            padding: 12px 16px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .example-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            text-align: right;
+            font-weight: normal;
+            font-size: 15px;
+            padding: 10px 16px;
+        }
+
+        .input-area {
+            padding: 12px 16px 24px;
+            background: var(--surface);
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-area input {
+            flex: 1;
+            min-height: 44px;
+            padding: 0 16px;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            font-size: 16px;
         }
 
         .send-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: 'Alef', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .send-btn:hover {
-            background: #1e40af;
-        }
-
-        .send-btn:disabled {
-            background: var(--text-dim);
-            cursor: not-allowed;
-            opacity: 0.5;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Tips Modal */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--surface);
-            border-radius: 8px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-close {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-dim);
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
             justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 24px;
         }
 
-        .modal-close:hover {
-            color: var(--text);
-        }
+        .modal-overlay.active { display: flex; }
 
-        .tip-header {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--accent);
-            font-size: 1.2rem;
-            font-weight: 700;
+        .tips-box {
+            background: var(--surface);
+            width: 100%;
+            border-radius: var(--radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .tip-content {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text);
+            font-size: 18px;
             text-align: center;
-            margin-bottom: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
         }
 
-        .tip-footer {
-            text-align: center;
-            color: var(--text-dim);
-            font-size: 0.9rem;
+        .tip-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tip-nav button {
+            min-width: 80px;
+            padding: 8px;
+        }
+
+        .tip-indicator {
+            font-size: 14px;
+            color: var(--text-light);
         }
 
         /* Analysis Screen */
         .analysis-container {
-            padding-top: 20px;
-        }
-
-        .main-score {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .main-score h2 {
-            color: var(--text-dim);
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-        }
-
-        .main-score .score {
-            font-size: 5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-
-        .detailed-scores {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            padding: 24px;
+            overflow-y: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
-            margin-bottom: 30px;
         }
 
-        .score-card {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            padding: 20px;
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto;
+            border: 8px solid #bfdbfe;
+        }
+
+        .detail-scores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .score-item {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: var(--radius);
             text-align: center;
+            border: 1px solid var(--border);
         }
+        
+        .score-item .label { font-size: 12px; color: var(--text-light); }
+        .score-item .value { font-size: 20px; font-weight: bold; color: var(--primary); }
 
-        .score-card h3 {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-        }
-
-        .score-card .score {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .insights-section {
+        .insight-card {
             background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            padding: 25px;
-            margin-bottom: 20px;
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
 
-        .insights-section h3 {
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
+        .insight-card h4 { margin-bottom: 8px; color: var(--primary); }
+        .insight-card p { font-size: 15px; line-height: 1.5; }
+
+        /* Loader */
+        .loader-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .loader-overlay.active { display: flex; }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .insights-section p, .insights-section ul {
-            color: var(--text);
-            line-height: 1.8;
-        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .insights-section ul {
-            list-style-position: inside;
-            margin-top: 10px;
-        }
-
-        .insights-section li {
-            margin-bottom: 8px;
-        }
-
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-dim);
-        }
-
-        .loading::after {
-            content: '...';
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .welcome-header h1 {
-                font-size: 2rem;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .game-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .chat-container {
-                height: 400px;
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-
-            .main-score .score {
-                font-size: 4rem;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Welcome Screen -->
-        <div id="welcomeScreen" class="screen active">
-            <div class="welcome-header">
-                <h1>🎭 סימולטור תקשורת</h1>
-                <p>שפר את התקשורת שלך דרך אימון חי</p>
-            </div>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="icon">⚡</div>
-                    <h3>אימון בזמן אמת</h3>
-                    <p>תרגול מעשי עם AI חכם שמדמה תקשורת דרמטית</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">💬</div>
-                    <h3>פידבק מיידי</h3>
-                    <p>קבל ציון וניתוח מפורט אחרי כל תגובה</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">📊</div>
-                    <h3>ניתוח מסכם</h3>
-                    <p>סיכום מפורט של החוזקות ותחומי הצמיחה שלך</p>
-                </div>
-            </div>
-
-            <button class="btn btn-center" onclick="startSetup()">בואו נתחיל</button>
-        </div>
-
-        <!-- Setup Screen -->
-        <div id="setupScreen" class="screen">
-            <div class="setup-section">
-                <h2>בחר את התפקיד הדרמטי לתרגול</h2>
-                <div class="options-grid" id="roleOptions">
-                    <div class="option-card" onclick="selectRole('victim')">
-                        <span class="emoji">😔</span>
-                        <span class="label">קורבן</span>
-                    </div>
-                    <div class="option-card" onclick="selectRole('rescuer')">
-                        <span class="emoji">🦸</span>
-                        <span class="label">מציל</span>
-                    </div>
-                    <div class="option-card" onclick="selectRole('persecutor')">
-                        <span class="emoji">😠</span>
-                        <span class="label">רודף</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="setup-section">
-                <h2>בחר את ההקשר</h2>
-                <div class="options-grid" id="contextOptions">
-                    <div class="option-card" onclick="selectContext('romantic')">
-                        <span class="emoji">💑</span>
-                        <span class="label">זוגי</span>
-                    </div>
-                    <div class="option-card" onclick="selectContext('family')">
-                        <span class="emoji">👨‍👩‍👧</span>
-                        <span class="label">משפחתי</span>
-                    </div>
-                    <div class="option-card" onclick="selectContext('work')">
-                        <span class="emoji">💼</span>
-                        <span class="label">עבודה</span>
-                    </div>
-                    <div class="option-card" onclick="selectContext('friendship')">
-                        <span class="emoji">🤝</span>
-                        <span class="label">חברות</span>
-                    </div>
-                    <div class="option-card" onclick="selectContext('client')">
-                        <span class="emoji">👤</span>
-                        <span class="label">לקוח</span>
-                    </div>
-                    <div class="option-card" onclick="selectContext('employee')">
-                        <span class="emoji">👔</span>
-                        <span class="label">עובד</span>
-                    </div>
-                    <div class="option-card" onclick="selectContext('trainee')">
-                        <span class="emoji">🎯</span>
-                        <span class="label">מאומן</span>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn btn-center" onclick="startTraining()" id="startTrainingBtn" disabled>התחל אימון</button>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="gameScreen" class="screen">
-            <div class="game-header">
-                <div class="role-badge" id="roleBadge"></div>
-                <button class="tips-btn" onclick="showTip()">💡 טיפים</button>
-                <div class="round-counter" id="roundCounter">סבב 0/8 מומלצים</div>
-                <button class="finish-btn" onclick="finishTraining()" id="finishBtn">סיים</button>
-            </div>
-
-            <div class="chat-container" id="chatContainer"></div>
-
-            <div class="examples-container" id="examplesContainer"></div>
-
-            <div class="input-container">
-                <input type="text" class="input-field" id="userInput" placeholder="הקלד את התגובה שלך..." onkeypress="handleKeyPress(event)">
-                <button class="send-btn" onclick="sendMessage()" id="sendBtn">שלח</button>
-            </div>
-        </div>
-
-        <!-- Analysis Screen -->
-        <div id="analysisScreen" class="screen">
-            <div class="analysis-container">
-                <div class="main-score">
-                    <h2>הציון הכללי שלך</h2>
-                    <div class="score" id="mainScore">0</div>
-                </div>
-
-                <div class="detailed-scores">
-                    <div class="score-card">
-                        <h3>עמדת בוגר</h3>
-                        <div class="score" id="adultScore">0</div>
-                    </div>
-                    <div class="score-card">
-                        <h3>הצבת גבולות</h3>
-                        <div class="score" id="boundariesScore">0</div>
-                    </div>
-                    <div class="score-card">
-                        <h3>העברת אחריות</h3>
-                        <div class="score" id="responsibilityScore">0</div>
-                    </div>
-                    <div class="score-card">
-                        <h3>הימנעות מדרמה</h3>
-                        <div class="score" id="dramaScore">0</div>
-                    </div>
-                </div>
-
-                <div class="insights-section" id="bestMoment"></div>
-                <div class="insights-section" id="strengths"></div>
-                <div class="insights-section" id="growthAreas"></div>
-                <div class="insights-section" id="recommendation"></div>
-
-                <button class="btn btn-center" onclick="resetApp()">אימון נוסף</button>
-            </div>
+<div id="app">
+    <div id="api-key-screen" class="screen active">
+        <div class="center-container">
+            <h2>הגדרת חיבור ל-OpenAI</h2>
+            <p style="margin-bottom: 24px; color: var(--text-light); text-align: right; width: 100%; font-size: 14px;">
+                כדי להשתמש בסימולטור, יש להזין מפתח API של OpenAI. המפתח יישמר מקומית בדפדפן שלך ולא ישלח לשום שרת למעט לצורך התקשורת עם המודל.
+            </p>
+            <input type="password" id="api-key-input" class="api-input" placeholder="sk-proj-..." autocomplete="off">
+            <button class="btn-primary" onclick="saveApiKey()">שמור והמשך</button>
         </div>
     </div>
 
-    <!-- Tips Modal -->
-    <div class="modal-overlay" id="tipsModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeTips()">✕</button>
-            <div class="tip-header" id="tipHeader">טיפ 1/7</div>
-            <div class="tip-content" id="tipContent"></div>
-            <div class="tip-footer">לחץ על "💡 טיפים" שוב לטיפ הבא</div>
-        </div>
-    </div>
-
-    <script>
-        // Configuration
-        const ANTHROPIC_API_KEY = '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';
-        const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-
-        // Game State
-        let gameState = {
-            selectedRole: null,
-            selectedContext: null,
-            turnCount: 0,
-            conversationHistory: [],
-            currentTipIndex: 0,
-            feedbackScores: []
-        };
-
-        // Tips Database
-        const tips = {
-            persecutor: [
-                "עצור לפני שאתה מגיב",
-                "הרודף הוא לרוב 'הורה ביקורתי'",
-                "המניע: לפרוק תסכול ולשלוט",
-                "היה ענייני ואובייקטיבי",
-                "שקף מציאות + דרישות ללא האשמה",
-                "שאל: 'מה התוצאה הרצויה?'",
-                "המטרה: להפוך רודף → מאתגר"
-            ],
-            rescuer: [
-                "עצור לפני שאתה מגיב",
-                "המציל הוא 'הורה מזין' לא-בריא",
-                "הוא מרגיש שעליו לעשות כדי להרגיש ערך",
-                "פועל מתוך 'אני בסדר, אתה לא'",
-                "המניע: להרגיש נחוץ ועליונות",
-                "אתגר את הצורך להתערב",
-                "שאל: 'איך זה תורם לי?'",
-                "הזמן אותו להפוך למאמן"
-            ],
-            victim: [
-                "עצור לפני שאתה מגיב",
-                "הקורבן הוא 'ילד מותאם'",
-                "המניע: להימנע מאחריות",
-                "אל תיתן פתרונות - שאל שאלות",
-                "שאל: 'מה הצעד הראשון?'",
-                "סרב להציל וחזק מסוגלות",
-                "המטרה: להפוך קורבן → יוצר"
-            ]
-        };
-
-        // Role names in Hebrew
-        const roleNames = {
-            victim: 'קורבן',
-            rescuer: 'מציל',
-            persecutor: 'רודף'
-        };
-
-        const contextNames = {
-            romantic: 'זוגי',
-            family: 'משפחתי',
-            work: 'עבודה',
-            friendship: 'חברות',
-            client: 'לקוח',
-            employee: 'עובד',
-            trainee: 'מאומן'
-        };
-
-        // Screen Management
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function startSetup() {
-            showScreen('setupScreen');
-        }
-
-        // Setup Selection
-        function selectRole(role) {
-            gameState.selectedRole = role;
-            document.querySelectorAll('#roleOptions .option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            event.target.closest('.option-card').classList.add('selected');
-            checkSetupComplete();
-        }
-
-        function selectContext(context) {
-            gameState.selectedContext = context;
-            document.querySelectorAll('#contextOptions .option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            event.target.closest('.option-card').classList.add('selected');
-            checkSetupComplete();
-        }
-
-        function checkSetupComplete() {
-            const btn = document.getElementById('startTrainingBtn');
-            if (gameState.selectedRole && gameState.selectedContext) {
-                btn.disabled = false;
-            }
-        }
-
-        // Start Training
-        async function startTraining() {
-            showScreen('gameScreen');
+    <div id="welcome-screen" class="screen">
+        <div class="center-container">
+            <h1>סימולטור משולש הדרמה</h1>
             
-            // Update role badge
-            const roleBadge = document.getElementById('roleBadge');
-            const roleEmojis = { victim: '😔', rescuer: '🦸', persecutor: '😠' };
-            roleBadge.innerHTML = `<span>${roleEmojis[gameState.selectedRole]}</span> <span>מתרגל: ${roleNames[gameState.selectedRole]}</span>`;
+            <div class="feature-card">
+                <h3>תרגול תרחישים</h3>
+                <p>התנסה בזמן אמת בסיטואציות תקשורת מורכבות ולמד לזהות את תפקידך.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>פידבק חי</h3>
+                <p>קבל משוב מידי מה-AI על התגובות שלך והצעות לתגובות חלופיות.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>ניתוח מעמיק</h3>
+                <p>בסיום התהליך, קבל דו"ח מפורט על נקודות החוזק ותחומי הצמיחה שלך.</p>
+            </div>
 
-            // Get initial character message
-            await getCharacterMessage(true);
+            <button class="btn-primary" style="margin-top: auto;" onclick="showScreen('setup-screen')">התחל אימון</button>
+        </div>
+    </div>
+
+    <div id="setup-screen" class="screen">
+        <div class="setup-container">
+            <h2>הגדרת סימולציה</h2>
+            
+            <div class="form-group">
+                <label>בחר תפקיד דרמטי (התפקיד שלך):</label>
+                <select id="role-select">
+                    <option value="persecutor">רודף (Persecutor)</option>
+                    <option value="rescuer">מציל (Rescuer)</option>
+                    <option value="victim">קורבן (Victim)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>בחר הקשר לסימולציה:</label>
+                <select id="context-select">
+                    <option value="romantic">זוגי</option>
+                    <option value="family">משפחתי</option>
+                    <option value="work">עבודה</option>
+                    <option value="friendship">חברות</option>
+                    <option value="client">לקוח</option>
+                    <option value="employee">עובד</option>
+                    <option value="coachee">מאומן</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" style="margin-top: auto;" onclick="startGame()">התחל סימולציה</button>
+            <button class="reset-key-btn" style="align-self: center;" onclick="clearApiKey()">איפוס מפתח API השמור בדפדפן</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="game-header">
+            <div class="header-top">
+                <span id="role-badge" class="role-badge">תפקיד</span>
+                <span id="round-counter" class="round-counter">סבב 0/8 מומלצים</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="openTips()">💡 טיפים</button>
+                <button class="btn-secondary" style="color: var(--danger); border-color: var(--danger);" onclick="endGame()">סיום משחק</button>
+            </div>
+        </div>
+
+        <div id="chat-area" class="chat-area">
+            </div>
+
+        <div id="examples-container" class="examples-container">
+            </div>
+
+        <div class="input-area">
+            <input type="text" id="chat-input" placeholder="הקלד את תגובתך..." onkeypress="handleEnter(event)">
+            <button class="btn-primary send-btn" onclick="sendUserMessage()">➤</button>
+        </div>
+
+        <div id="tips-modal" class="modal-overlay">
+            <div class="tips-box">
+                <div id="tip-content" class="tip-content">טקסט טיפ</div>
+                <div class="tip-nav">
+                    <button class="btn-secondary" onclick="prevTip()">קודם</button>
+                    <span id="tip-indicator" class="tip-indicator">1/7</span>
+                    <button class="btn-secondary" onclick="nextTip()">הבא</button>
+                </div>
+                <button class="btn-primary" onclick="closeTips()">סגור</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="analysis-screen" class="screen">
+        <div class="analysis-container">
+            <h2 style="text-align: center;">סיכום אימון</h2>
+            
+            <div id="final-score" class="score-circle">0</div>
+            
+            <div class="detail-scores">
+                <div class="score-item">
+                    <div class="label">אמפתיה</div>
+                    <div id="score-empathy" class="value">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">גבולות</div>
+                    <div id="score-boundaries" class="value">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">בהירות</div>
+                    <div id="score-clarity" class="value">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">מצב בוגר</div>
+                    <div id="score-adult" class="value">0</div>
+                </div>
+            </div>
+
+            <div class="insight-card">
+                <h4>הרגע הטוב ביותר</h4>
+                <p id="analysis-best-moment"></p>
+            </div>
+
+            <div class="insight-card">
+                <h4>חוזקות</h4>
+                <p id="analysis-strengths"></p>
+            </div>
+
+            <div class="insight-card">
+                <h4>תחומי צמיחה</h4>
+                <p id="analysis-growth"></p>
+            </div>
+
+            <div class="insight-card">
+                <h4>המלצה להמשך</h4>
+                <p id="analysis-recommendation"></p>
+            </div>
+
+            <button class="btn-primary" onclick="resetApp()">אימון נוסף</button>
+        </div>
+    </div>
+
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight: 600;">מעבד נתונים...</div>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+    let apiKey = localStorage.getItem('openai_api_key') || '';
+    const API_MODEL = 'gpt-4o-mini';
+    const API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+        if (apiKey) {
+            showScreen('welcome-screen');
+        } else {
+            showScreen('api-key-screen');
+        }
+    });
+
+    function saveApiKey() {
+        const input = document.getElementById('api-key-input').value.trim();
+        if (input.startsWith('sk-')) {
+            apiKey = input;
+            localStorage.setItem('openai_api_key', apiKey);
+            showScreen('welcome-screen');
+        } else {
+            alert('מפתח ה-API אינו תקין. עליו להתחיל ב-"sk-".');
+        }
+    }
+
+    function clearApiKey() {
+        if(confirm('האם אתה בטוח שברצונך למחוק את מפתח ה-API השמור?')) {
+            localStorage.removeItem('openai_api_key');
+            apiKey = '';
+            document.getElementById('api-key-input').value = '';
+            showScreen('api-key-screen');
+        }
+    }
+
+    // --- Tips Data ---
+    const TIPS = {
+        persecutor: [
+            "עצור לפני שאתה מגיב",
+            "הרודף הוא לרוב 'הורה ביקורתי'",
+            "המניע: לפרוק תסכול ולשלוט",
+            "היה ענייני ואובייקטיבי",
+            "שקף מציאות + דרישות ללא האשמה",
+            "שאל: 'מה התוצאה הרצויה?'",
+            "המטרה: להפוך רודף → מאתגר"
+        ],
+        rescuer: [
+            "עצור לפני שאתה מגיב",
+            "המציל הוא 'הורה מזין' לא-בריא",
+            "הוא מרגיש שעליו לעשות כדי להרגיש ערך",
+            "פועל מתוך 'אני בסדר, אתה לא'",
+            "המניע: להרגיש נחוץ ועליונות",
+            "אתגר את הצורך להתערב",
+            "שאל: 'איך זה תורם לי?'",
+            "הזמן אותו להפוך למאמן"
+        ],
+        victim: [
+            "עצור לפני שאתה מגיב",
+            "הקורבן הוא 'ילד מותאם'",
+            "המניע: להימנע מאחריות",
+            "אל תיתן פתרונות - שאל שאלות",
+            "שאל: 'מה הצעד הראשון?'",
+            "סרב להציל וחזק מסוגלות",
+            "המטרה: להפוך קורבן → יוצר"
+        ]
+    };
+
+    const ROLE_NAMES = {
+        persecutor: "רודף",
+        rescuer: "מציל",
+        victim: "קורבן"
+    };
+
+    // --- State ---
+    let state = {
+        role: '',
+        context: '',
+        turnCount: 0,
+        chatHistory: [],
+        currentTipIndex: 0,
+        systemPrompt: ''
+    };
+
+    // --- UI Helpers ---
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function showLoader(show) {
+        document.getElementById('loader').classList.toggle('active', show);
+    }
+
+    function scrollToBottom() {
+        const chatArea = document.getElementById('chat-area');
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    // --- API Helper ---
+    async function callOpenAI(messages, expectJson = true) {
+        if (!apiKey) {
+            alert('מפתח API חסר. אנא הגדר מפתח במסך הראשי.');
+            clearApiKey();
+            return null;
         }
 
-        // Claude API Call
-        async function callClaude(messages, systemPrompt = '') {
-            try {
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': ANTHROPIC_API_KEY,
-                        'anthropic-version': '2023-06-01'
-                    },
-                    body: JSON.stringify({
-                        model: CLAUDE_MODEL,
-                        max_tokens: 1000,
-                        system: systemPrompt,
-                        messages: messages
-                    })
-                });
+        try {
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: API_MODEL,
+                    messages: messages,
+                    response_format: expectJson ? { type: "json_object" } : { type: "text" },
+                    temperature: 0.7
+                })
+            });
 
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                return data.content[0].text;
-            } catch (error) {
-                console.error('Claude API Error:', error);
-                alert('שגיאה בתקשורת עם השרת. אנא נסה שוב.');
+            if (response.status === 401) {
+                alert('מפתח ה-API אינו מורשה או שגוי. אנא הזן מפתח חדש.');
+                clearApiKey();
                 return null;
             }
-        }
 
-        // Get Character Message
-        async function getCharacterMessage(isFirst = false) {
-            const chatContainer = document.getElementById('chatContainer');
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
             
-            // Show loading
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading';
-            loadingDiv.textContent = 'הדמות מגיבה';
-            chatContainer.appendChild(loadingDiv);
-
-            let systemPrompt = '';
-            let userPrompt = '';
-
-            if (isFirst) {
-                systemPrompt = `אתה דמות בסימולטור תקשורת. המשתמש מתרגל להתמודד עם תפקיד דרמטי של "${roleNames[gameState.selectedRole]}" בהקשר ${contextNames[gameState.selectedContext]}.
-
-התפקיד שלך: להיות הדמות המתקשרת מתוך התפקיד הדרמטי "${roleNames[gameState.selectedRole]}" בצורה אותנטית אך לא קיצונית.
-
-הנחיות:
-- כתוב בעברית
-- התנהג כאדם אמיתי בהקשר ${contextNames[gameState.selectedContext]}
-- הצג את התפקיד הדרמטי בצורה ברורה אך לא מוגזמת
-- הודעות קצרות (2-3 משפטים)
-- התחל שיחה טבעית`;
-
-                userPrompt = 'התחל את השיחה בהודעת פתיחה טבעית שמתאימה להקשר ולתפקיד.';
-            } else {
-                systemPrompt = `אתה ממשיך את השיחה כדמות בתפקיד דרמטי של "${roleNames[gameState.selectedRole]}" בהקשר ${contextNames[gameState.selectedContext]}.
-
-הנחיות:
-- כתוב בעברית
-- הגב בצורה טבעית לתגובת המשתמש
-- שמור על התפקיד הדרמטי
-- הודעות קצרות (2-3 משפטים)
-- אל תצא מהדמות`;
-
-                const lastUserMessage = gameState.conversationHistory[gameState.conversationHistory.length - 1];
-                userPrompt = `המשתמש אמר: "${lastUserMessage.content}"\n\nהגב כדמות.`;
+            const data = await response.json();
+            let content = data.choices[0].message.content;
+            
+            if (expectJson) {
+                return JSON.parse(content);
             }
-
-            const response = await callClaude([
-                { role: 'user', content: userPrompt }
-            ], systemPrompt);
-
-            // Remove loading
-            chatContainer.removeChild(loadingDiv);
-
-            if (response) {
-                addMessage('character', response);
-                gameState.conversationHistory.push({ role: 'character', content: response });
-                
-                // Get examples
-                await getExamples();
-            }
+            return content;
+        } catch (error) {
+            console.error(error);
+            alert('שגיאה בתקשורת מול השרת. אנא בדוק את החיבור ומפתח ה-API.');
+            showLoader(false);
+            return null;
         }
+    }
 
-        // Get Response Examples
-        async function getExamples() {
-            const systemPrompt = `אתה מייצר 4 דוגמאות תגובה להודעה האחרונה בשיחה.
+    // --- Game Logic ---
+    async function startGame() {
+        state.role = document.getElementById('role-select').value;
+        state.context = document.getElementById('context-select').value;
+        state.turnCount = 0;
+        state.chatHistory = [];
+        
+        document.getElementById('role-badge').innerText = ROLE_NAMES[state.role];
+        updateTurnCounter();
+        document.getElementById('chat-area').innerHTML = '';
+        document.getElementById('examples-container').innerHTML = '';
+        document.getElementById('chat-input').value = '';
 
-3 דוגמאות דרמטיות (קורבן, מציל, רודף) ו-1 דוגמה בוגרת.
+        state.systemPrompt = `You are a character in a Karpman Drama Triangle communication simulator.
+The user is practicing stepping out of the "${state.role}" role into an Adult state.
+The context of the relationship is: ${state.context}.
+You will speak in Hebrew. 
+Act naturally as the counterpart character trying to pull the user into the drama.`;
 
-כל דוגמה: 5-10 מילים בעברית, קצרה וממוקדת.
+        showScreen('game-screen');
+        showLoader(true);
 
-החזר JSON בלבד:
+        const prompt = `Start the simulation. Generate an opening message from your character addressing the user, attempting to pull them into drama (fit for the context: ${state.context}). 
+Also generate 4 distinct response examples for the user (5-10 words each) representing: victim, rescuer, persecutor, and adult.
+Return ONLY a JSON object with this structure:
 {
-  "victim": "תגובה קצרה של קורבן",
-  "rescuer": "תגובה קצרה של מציל",
-  "persecutor": "תגובה קצרה של רודף",
-  "adult": "תגובה קצרה בוגרת"
+  "message": "opening text here",
+  "examples": [
+    {"type": "victim", "text": "..."},
+    {"type": "rescuer", "text": "..."},
+    {"type": "persecutor", "text": "..."},
+    {"type": "adult", "text": "..."}
+  ]
 }`;
 
-            const lastMessage = gameState.conversationHistory[gameState.conversationHistory.length - 1].content;
-            const userPrompt = `ההודעה: "${lastMessage}"\n\nהקשר: ${contextNames[gameState.selectedContext]}\n\nצור 4 דוגמאות תגובה.`;
+        const messages = [
+            { role: "system", content: state.systemPrompt },
+            { role: "user", content: prompt }
+        ];
 
-            const response = await callClaude([
-                { role: 'user', content: userPrompt }
-            ], systemPrompt);
+        const res = await callOpenAI(messages);
+        showLoader(false);
 
-            if (response) {
-                try {
-                    // Clean JSON response
-                    let cleanResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                    const examples = JSON.parse(cleanResponse);
-                    displayExamples(examples);
-                } catch (error) {
-                    console.error('Failed to parse examples:', error);
-                }
-            }
+        if (res) {
+            appendMessage('bot', res.message);
+            state.chatHistory.push({ role: 'assistant', content: res.message });
+            renderExamples(res.examples);
         }
+    }
 
-        // Display Examples
-        function displayExamples(examples) {
-            const container = document.getElementById('examplesContainer');
-            container.innerHTML = '';
+    async function sendUserMessage(text = null) {
+        const inputStr = text || document.getElementById('chat-input').value.trim();
+        if (!inputStr) return;
 
-            // Shuffle examples
-            const examplesArray = [
-                { text: examples.victim, type: 'victim' },
-                { text: examples.rescuer, type: 'rescuer' },
-                { text: examples.persecutor, type: 'persecutor' },
-                { text: examples.adult, type: 'adult' }
-            ];
-            
-            examplesArray.sort(() => Math.random() - 0.5);
+        document.getElementById('chat-input').value = '';
+        document.getElementById('examples-container').innerHTML = '';
+        
+        appendMessage('user', inputStr);
+        state.chatHistory.push({ role: 'user', content: inputStr });
+        
+        state.turnCount++;
+        updateTurnCounter();
 
-            examplesArray.forEach(example => {
-                const btn = document.createElement('button');
-                btn.className = 'example-btn';
-                btn.textContent = example.text;
-                btn.onclick = () => useExample(example.text);
-                container.appendChild(btn);
-            });
-        }
+        showLoader(true);
 
-        function useExample(text) {
-            document.getElementById('userInput').value = text;
-        }
+        const evaluationPrompt = `The user just replied: "${inputStr}".
+1. Evaluate their response (score 1-100 on how well they stayed in the Adult state and avoided drama).
+2. Provide a brief analysis and what worked or what to improve (in Hebrew).
+3. Generate your character's next response to continue the conversation.
+4. Generate 4 new response examples for the user's next turn (victim, rescuer, persecutor, adult - 5-10 words each).
 
-        // Send Message
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const message = input.value.trim();
-            
-            if (!message) return;
-
-            // Disable input
-            input.disabled = true;
-            document.getElementById('sendBtn').disabled = true;
-            document.getElementById('examplesContainer').innerHTML = '';
-
-            // Add user message
-            addMessage('user', message);
-            gameState.conversationHistory.push({ role: 'user', content: message });
-            input.value = '';
-
-            // Increment turn
-            gameState.turnCount++;
-            updateRoundCounter();
-
-            // Get feedback
-            await getFeedback(message);
-
-            // Get next character message
-            await getCharacterMessage(false);
-
-            // Re-enable input
-            input.disabled = false;
-            document.getElementById('sendBtn').disabled = false;
-            input.focus();
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        // Get Feedback
-        async function getFeedback(userMessage) {
-            const chatContainer = document.getElementById('chatContainer');
-            
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading';
-            loadingDiv.textContent = 'מנתח את התגובה';
-            chatContainer.appendChild(loadingDiv);
-
-            const systemPrompt = `אתה מעריך תגובות בסימולטור תקשורת.
-
-המשתמש מתרגל להימנע מתפקיד דרמטי של "${roleNames[gameState.selectedRole]}".
-
-העריכה:
-- ציון 1-100
-- ניתוח קצר (2-3 משפטים)
-- מה עבד (אם >=60) או מה לשפר (אם <60)
-
-החזר JSON בלבד:
+Return ONLY a JSON object with this structure:
 {
-  "score": מספר,
-  "analysis": "ניתוח",
-  "what_worked": "מה עבד" או null,
-  "what_to_improve": "מה לשפר" או null
+  "score": 85,
+  "analysis": "...",
+  "feedback": "...",
+  "next_message": "...",
+  "examples": [
+    {"type": "victim", "text": "..."},
+    {"type": "rescuer", "text": "..."},
+    {"type": "persecutor", "text": "..."},
+    {"type": "adult", "text": "..."}
+  ]
 }`;
 
-            const context = gameState.conversationHistory.slice(-4).map(m => 
-                `${m.role === 'character' ? 'דמות' : 'משתמש'}: ${m.content}`
-            ).join('\n');
+        const messages = [
+            { role: "system", content: state.systemPrompt },
+            ...state.chatHistory,
+            { role: "user", content: evaluationPrompt }
+        ];
 
-            const userPrompt = `הקשר השיחה:\n${context}\n\nהתגובה לניתוח: "${userMessage}"\n\nתן פידבק.`;
+        const res = await callOpenAI(messages);
+        showLoader(false);
 
-            const response = await callClaude([
-                { role: 'user', content: userPrompt }
-            ], systemPrompt);
+        if (res) {
+            appendFeedback(res.score, res.feedback || res.analysis);
+            appendMessage('bot', res.next_message);
+            state.chatHistory.push({ role: 'assistant', content: res.next_message });
+            renderExamples(res.examples);
+        }
+    }
 
-            chatContainer.removeChild(loadingDiv);
-
-            if (response) {
-                try {
-                    let cleanResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                    const feedback = JSON.parse(cleanResponse);
-                    displayFeedback(feedback);
-                    gameState.feedbackScores.push(feedback);
-                } catch (error) {
-                    console.error('Failed to parse feedback:', error);
-                }
-            }
+    async function endGame() {
+        if (state.chatHistory.length === 0) {
+            resetApp();
+            return;
         }
 
-        // Display Feedback
-        function displayFeedback(feedback) {
-            const chatContainer = document.getElementById('chatContainer');
-            
-            const feedbackCard = document.createElement('div');
-            feedbackCard.className = 'feedback-card';
-            
-            let scoreClass = 'medium';
-            if (feedback.score >= 70) scoreClass = 'high';
-            else if (feedback.score < 50) scoreClass = 'low';
-            
-            let content = `<div class="feedback-score ${scoreClass}">ציון: ${feedback.score}/100</div>`;
-            content += `<div class="feedback-text">${feedback.analysis}</div>`;
-            
-            if (feedback.what_worked) {
-                content += `<div class="feedback-text"><strong>מה עבד:</strong> ${feedback.what_worked}</div>`;
-            }
-            
-            if (feedback.what_to_improve) {
-                content += `<div class="feedback-text"><strong>מה לשפר:</strong> ${feedback.what_to_improve}</div>`;
-            }
-            
-            feedbackCard.innerHTML = content;
-            chatContainer.appendChild(feedbackCard);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+        showLoader(true);
 
-        // Add Message to Chat
-        function addMessage(sender, content) {
-            const chatContainer = document.getElementById('chatContainer');
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
-            
-            messageDiv.appendChild(contentDiv);
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        // Update Round Counter
-        function updateRoundCounter() {
-            const counter = document.getElementById('roundCounter');
-            const finishBtn = document.getElementById('finishBtn');
-            
-            counter.textContent = `סבב ${gameState.turnCount}/8 מומלצים`;
-            
-            if (gameState.turnCount >= 8) {
-                counter.classList.add('complete');
-                finishBtn.classList.add('ready');
-            }
-        }
-
-        // Tips System
-        function showTip() {
-            const modal = document.getElementById('tipsModal');
-            const tipsList = tips[gameState.selectedRole];
-            
-            if (gameState.currentTipIndex >= tipsList.length) {
-                gameState.currentTipIndex = 0;
-            }
-            
-            const currentTip = tipsList[gameState.currentTipIndex];
-            
-            document.getElementById('tipHeader').textContent = `טיפ ${gameState.currentTipIndex + 1}/7`;
-            document.getElementById('tipContent').textContent = currentTip;
-            
-            modal.classList.add('active');
-            
-            gameState.currentTipIndex++;
-        }
-
-        function closeTips() {
-            document.getElementById('tipsModal').classList.remove('active');
-        }
-
-        // Finish Training
-        async function finishTraining() {
-            if (gameState.turnCount < 1) {
-                alert('בצע לפחות סבב אחד לפני סיום האימון');
-                return;
-            }
-
-            showScreen('analysisScreen');
-            await generateAnalysis();
-        }
-
-        // Generate Analysis
-        async function generateAnalysis() {
-            const systemPrompt = `אתה מנתח ביצועים בסימולטור תקשורת.
-
-המשתמש תרגל להימנע מתפקיד דרמטי של "${roleNames[gameState.selectedRole]}".
-
-צור ניתוח מקיף:
-- ציון כללי (ממוצע)
-- 4 ציונים מפורטים
-- הרגע הטוב ביותר
-- חוזקות (רשימה)
-- תחומי צמיחה (רשימה)
-- המלצה לאימון הבא
-
-החזר JSON בלבד:
+        const prompt = `The simulation has ended. Analyze the entire conversation.
+Return ONLY a JSON object with this structure (in Hebrew):
 {
-  "overall_score": מספר,
-  "adult_stance": מספר,
-  "boundaries": מספר,
-  "responsibility": מספר,
-  "drama_avoidance": מספר,
-  "best_moment": "תיאור",
-  "strengths": ["חוזקה 1", "חוזקה 2", "חוזקה 3"],
-  "growth_areas": ["תחום 1", "תחום 2"],
-  "recommendation": "המלצה"
+  "overall_score": 80,
+  "scores": {
+    "empathy": 80,
+    "boundaries": 70,
+    "clarity": 90,
+    "adult_state": 85
+  },
+  "best_moment": "...",
+  "strengths": "...",
+  "growth_areas": "...",
+  "recommendation": "..."
 }`;
 
-            const conversationSummary = gameState.conversationHistory.map(m => 
-                `${m.role === 'character' ? 'דמות' : 'משתמש'}: ${m.content}`
-            ).join('\n');
+        const messages = [
+            { role: "system", content: state.systemPrompt },
+            ...state.chatHistory,
+            { role: "user", content: prompt }
+        ];
 
-            const scores = gameState.feedbackScores.map(f => f.score).join(', ');
+        const res = await callOpenAI(messages);
+        showLoader(false);
 
-            const userPrompt = `סיכום השיחה:\n${conversationSummary}\n\nציונים שהתקבלו: ${scores}\n\nצור ניתוח מקיף.`;
-
-            const response = await callClaude([
-                { role: 'user', content: userPrompt }
-            ], systemPrompt);
-
-            if (response) {
-                try {
-                    let cleanResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                    const analysis = JSON.parse(cleanResponse);
-                    displayAnalysis(analysis);
-                } catch (error) {
-                    console.error('Failed to parse analysis:', error);
-                    // Show simple fallback analysis
-                    const avgScore = Math.round(gameState.feedbackScores.reduce((a, b) => a + b.score, 0) / gameState.feedbackScores.length);
-                    displayAnalysis({
-                        overall_score: avgScore,
-                        adult_stance: avgScore,
-                        boundaries: avgScore,
-                        responsibility: avgScore,
-                        drama_avoidance: avgScore,
-                        best_moment: 'המשכת להתקדם לאורך האימון',
-                        strengths: ['השתתפות פעילה', 'נכונות ללמוד'],
-                        growth_areas: ['המשך תרגול'],
-                        recommendation: 'המשך לתרגל את התפקיד הזה'
-                    });
-                }
-            }
+        if (res) {
+            populateAnalysis(res);
+            showScreen('analysis-screen');
         }
+    }
 
-        // Display Analysis
-        function displayAnalysis(analysis) {
-            document.getElementById('mainScore').textContent = analysis.overall_score;
-            document.getElementById('adultScore').textContent = analysis.adult_stance;
-            document.getElementById('boundariesScore').textContent = analysis.boundaries;
-            document.getElementById('responsibilityScore').textContent = analysis.responsibility;
-            document.getElementById('dramaScore').textContent = analysis.drama_avoidance;
+    // --- UI Updaters ---
+    function appendMessage(sender, text) {
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        div.innerText = text;
+        document.getElementById('chat-area').appendChild(div);
+        scrollToBottom();
+    }
 
-            document.getElementById('bestMoment').innerHTML = `
-                <h3>🌟 הרגע הטוב ביותר</h3>
-                <p>${analysis.best_moment}</p>
-            `;
+    function appendFeedback(score, text) {
+        const div = document.createElement('div');
+        div.className = 'feedback-bubble';
+        div.innerHTML = `<strong>ציון: ${score}/100</strong><br>${text}`;
+        document.getElementById('chat-area').appendChild(div);
+        scrollToBottom();
+    }
 
-            document.getElementById('strengths').innerHTML = `
-                <h3>💪 החוזקות שלך</h3>
-                <ul>${analysis.strengths.map(s => `<li>${s}</li>`).join('')}</ul>
-            `;
+    function renderExamples(examplesArray) {
+        if (!examplesArray || !Array.isArray(examplesArray)) return;
+        
+        const shuffled = examplesArray.sort(() => 0.5 - Math.random());
+        const container = document.getElementById('examples-container');
+        container.innerHTML = '';
 
-            document.getElementById('growthAreas').innerHTML = `
-                <h3>🌱 תחומים לצמיחה</h3>
-                <ul>${analysis.growth_areas.map(g => `<li>${g}</li>`).join('')}</ul>
-            `;
-
-            document.getElementById('recommendation').innerHTML = `
-                <h3>🎯 המלצה לאימון הבא</h3>
-                <p>${analysis.recommendation}</p>
-            `;
-        }
-
-        // Reset App
-        function resetApp() {
-            gameState = {
-                selectedRole: null,
-                selectedContext: null,
-                turnCount: 0,
-                conversationHistory: [],
-                currentTipIndex: 0,
-                feedbackScores: []
+        shuffled.forEach(ex => {
+            const btn = document.createElement('button');
+            btn.className = 'example-btn';
+            btn.innerText = ex.text;
+            btn.onclick = () => {
+                document.getElementById('chat-input').value = ex.text;
+                sendUserMessage(ex.text);
             };
-
-            document.getElementById('chatContainer').innerHTML = '';
-            document.getElementById('examplesContainer').innerHTML = '';
-            document.getElementById('userInput').value = '';
-            document.getElementById('roundCounter').textContent = 'סבב 0/8 מומלצים';
-            document.getElementById('roundCounter').classList.remove('complete');
-            document.getElementById('finishBtn').classList.remove('ready');
-
-            document.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-
-            showScreen('welcomeScreen');
-        }
-
-        // Close modal on overlay click
-        document.getElementById('tipsModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeTips();
-            }
+            container.appendChild(btn);
         });
-    </script>
+    }
+
+    function updateTurnCounter() {
+        const counter = document.getElementById('round-counter');
+        counter.innerText = `סבב ${state.turnCount}/8 מומלצים`;
+        if (state.turnCount >= 8) {
+            counter.classList.add('success');
+        } else {
+            counter.classList.remove('success');
+        }
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') {
+            sendUserMessage();
+        }
+    }
+
+    // --- Tips Logic ---
+    function openTips() {
+        state.currentTipIndex = 0;
+        updateTipUI();
+        document.getElementById('tips-modal').classList.add('active');
+    }
+
+    function closeTips() {
+        document.getElementById('tips-modal').classList.remove('active');
+    }
+
+    function nextTip() {
+        if (state.currentTipIndex < TIPS[state.role].length - 1) {
+            state.currentTipIndex++;
+            updateTipUI();
+        }
+    }
+
+    function prevTip() {
+        if (state.currentTipIndex > 0) {
+            state.currentTipIndex--;
+            updateTipUI();
+        }
+    }
+
+    function updateTipUI() {
+        const tips = TIPS[state.role];
+        document.getElementById('tip-content').innerText = tips[state.currentTipIndex];
+        document.getElementById('tip-indicator').innerText = `${state.currentTipIndex + 1}/${tips.length}`;
+    }
+
+    // --- Analysis Logic ---
+    function populateAnalysis(data) {
+        document.getElementById('final-score').innerText = data.overall_score || 0;
+        document.getElementById('score-empathy').innerText = data.scores?.empathy || 0;
+        document.getElementById('score-boundaries').innerText = data.scores?.boundaries || 0;
+        document.getElementById('score-clarity').innerText = data.scores?.clarity || 0;
+        document.getElementById('score-adult').innerText = data.scores?.adult_state || 0;
+        
+        document.getElementById('analysis-best-moment').innerText = data.best_moment || '';
+        document.getElementById('analysis-strengths').innerText = data.strengths || '';
+        document.getElementById('analysis-growth').innerText = data.growth_areas || '';
+        document.getElementById('analysis-recommendation').innerText = data.recommendation || '';
+    }
+
+    function resetApp() {
+        showScreen('setup-screen');
+    }
+
+</script>
 </body>
 </html>
