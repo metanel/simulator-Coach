@@ -186,6 +186,11 @@
             align-items: center;
         }
 
+        .badges-group {
+            display: flex;
+            gap: 8px;
+        }
+
         .role-badge {
             background: var(--primary);
             color: white;
@@ -193,6 +198,18 @@
             border-radius: 20px;
             font-size: 14px;
             font-weight: 600;
+        }
+
+        .context-badge {
+            background: var(--surface);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: auto;
         }
 
         .round-counter {
@@ -307,7 +324,7 @@
             justify-content: center;
         }
 
-        /* Tips Modal */
+        /* Modals */
         .modal-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -321,7 +338,7 @@
 
         .modal-overlay.active { display: flex; }
 
-        .tips-box {
+        .modal-box {
             background: var(--surface);
             width: 100%;
             border-radius: var(--radius);
@@ -339,6 +356,12 @@
             align-items: center;
             justify-content: center;
             font-weight: 500;
+        }
+
+        .context-content {
+            font-size: 16px;
+            text-align: right;
+            line-height: 1.6;
         }
 
         .tip-nav {
@@ -508,7 +531,10 @@
     <div id="game-screen" class="screen">
         <div class="game-header">
             <div class="header-top">
-                <span id="role-badge" class="role-badge">תפקיד</span>
+                <div class="badges-group">
+                    <span id="role-badge" class="role-badge">תפקיד</span>
+                    <button id="context-badge-btn" class="context-badge" onclick="openContextModal()">הקשר</button>
+                </div>
                 <span id="round-counter" class="round-counter">סבב 0/8 מומלצים</span>
             </div>
             <div class="header-actions">
@@ -529,7 +555,7 @@
         </div>
 
         <div id="tips-modal" class="modal-overlay">
-            <div class="tips-box">
+            <div class="modal-box">
                 <div id="tip-content" class="tip-content">טקסט טיפ</div>
                 <div class="tip-nav">
                     <button class="btn-secondary" onclick="prevTip()">קודם</button>
@@ -537,6 +563,14 @@
                     <button class="btn-secondary" onclick="nextTip()">הבא</button>
                 </div>
                 <button class="btn-primary" onclick="closeTips()">סגור</button>
+            </div>
+        </div>
+
+        <div id="context-modal" class="modal-overlay">
+            <div class="modal-box">
+                <h3 style="text-align:center; color: var(--primary);">ציפייה בריאה מהקשר</h3>
+                <div id="context-content" class="context-content">טקסט ציפייה</div>
+                <button class="btn-primary" onclick="closeContextModal()">סגור</button>
             </div>
         </div>
     </div>
@@ -631,7 +665,33 @@
         }
     }
 
-    // --- Tips Data ---
+    // --- Data ---
+    const ROLE_NAMES = {
+        persecutor: "רודף",
+        rescuer: "מציל",
+        victim: "קורבן"
+    };
+
+    const CONTEXT_NAMES = {
+        romantic: "זוגי",
+        family: "משפחתי",
+        work: "עבודה",
+        friendship: "חברות",
+        client: "לקוח",
+        employee: "עובד",
+        coachee: "מאומן"
+    };
+
+    const CONTEXT_EXPECTATIONS = {
+        romantic: "בזוגיות בריאה, הציפייה היא לשותפות שוויונית, פגיעות הדדית, תמיכה רגשית ותקשורת פתוחה. מותר לצפות לאינטימיות ומחויבות, אך כל צד אחראי לרגשותיו ולצרכיו ואין לצפות שהצד השני \"יציל\" אותך מעצמך.",
+        family: "במשפחה, הציפייה היא לקבלה ותמיכה בסיסית, אך עם גבולות ברורים בין אינדיבידואלים. ההורים אחראים לילדים (עד בגרות), אך בוגרים אחראים לעצמם. מותר לא להסכים, לשמור על עצמאות ולא לקחת אחריות על בחירות של בני משפחה אחרים.",
+        work: "בסביבת עבודה, הציפייה היא למקצועיות, עמידה ביעדים, שיתוף פעולה ענייני וכבוד הדדי. אין חובה לספק תמיכה רגשית עמוקה, והגבולות מוגדרים על ידי תפקידים, אחריות ונהלים.",
+        friendship: "בחברות, הציפייה היא להדדיות, הנאה משותפת, בחירה חופשית ותמיכה. זהו קשר וולונטרי, ולכן הציפייה היא לאיזון בנתינה ובקבלה ללא תלות מוחלטת או דרישה למחויבות נוקשה.",
+        client: "מול לקוח, הציפייה היא למתן שירות מקצועי בהתאם להסכם מוגדר, שקיפות, ואדיבות. הלקוח מצפה לפתרון או שירות, ובעל המקצוע מצפה לתגמול הולם ויחס מכבד. הגבולות הם עסקיים לחלוטין ואין מקום למעורבות רגשית עודפת.",
+        employee: "מול עובד, הציפייה היא לביצוע התפקיד, אחריות, ולמידה. מנגד, לעובד יש ציפייה לסביבת עבודה בטוחה, הוגנת, משוב ברור ותגמול. הקשר מבוסס על סמכות מוגדרת וחוזה עבודה, ולא על מערכת יחסים הורית.",
+        coachee: "מול מאומן, הציפייה היא למחויבות לתהליך וללמידה מצד המאומן. מצד המאמן, הציפייה היא לשיקוף, אתגור, שמירה על גבולות התהליך ואמונה ביכולת המאומן. המאמן אינו פותר את הבעיות אלא מלווה את המאומן בפתרונן באופן בוגר ואחראי."
+    };
+
     const TIPS = {
         persecutor: [
             "עצור לפני שאתה מגיב",
@@ -661,12 +721,6 @@
             "סרב להציל וחזק מסוגלות",
             "המטרה: להפוך קורבן → יוצר"
         ]
-    };
-
-    const ROLE_NAMES = {
-        persecutor: "רודף",
-        rescuer: "מציל",
-        victim: "קורבן"
     };
 
     // --- State ---
@@ -748,6 +802,9 @@
         state.chatHistory = [];
         
         document.getElementById('role-badge').innerText = ROLE_NAMES[state.role];
+        document.getElementById('context-badge-btn').innerText = `הקשר: ${CONTEXT_NAMES[state.context]}`;
+        document.getElementById('context-content').innerText = CONTEXT_EXPECTATIONS[state.context];
+
         updateTurnCounter();
         document.getElementById('chat-area').innerHTML = '';
         document.getElementById('examples-container').innerHTML = '';
@@ -933,7 +990,7 @@ Return ONLY a JSON object with this structure (in Hebrew):
         }
     }
 
-    // --- Tips Logic ---
+    // --- Modals Logic ---
     function openTips() {
         state.currentTipIndex = 0;
         updateTipUI();
@@ -962,6 +1019,14 @@ Return ONLY a JSON object with this structure (in Hebrew):
         const tips = TIPS[state.role];
         document.getElementById('tip-content').innerText = tips[state.currentTipIndex];
         document.getElementById('tip-indicator').innerText = `${state.currentTipIndex + 1}/${tips.length}`;
+    }
+
+    function openContextModal() {
+        document.getElementById('context-modal').classList.add('active');
+    }
+
+    function closeContextModal() {
+        document.getElementById('context-modal').classList.remove('active');
     }
 
     // --- Analysis Logic ---
