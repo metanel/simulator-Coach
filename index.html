@@ -520,11 +520,12 @@
             <h2>הגדרת סימולציה</h2>
             
             <div class="form-group">
-                <label>בחר תפקיד דרמטי (התפקיד שלך):</label>
+                <label>בחר תפקיד (האתגר שמולך):</label>
                 <select id="role-select">
                     <option value="persecutor">רודף (Persecutor)</option>
                     <option value="rescuer">מציל (Rescuer)</option>
                     <option value="victim">קורבן (Victim)</option>
+                    <option value="combined">משולב (מעבר דינמי בין תפקידים)</option>
                 </select>
             </div>
 
@@ -692,7 +693,8 @@
     const ROLE_NAMES = {
         persecutor: "רודף",
         rescuer: "מציל",
-        victim: "קורבן"
+        victim: "קורבן",
+        combined: "משולב"
     };
 
     const CONTEXT_NAMES = {
@@ -778,6 +780,13 @@
             "שאל: 'מה הצעד הראשון?'",
             "סרב להציל וחזק מסוגלות",
             "המטרה: להפוך קורבן → יוצר"
+        ],
+        combined: [
+            "שים לב למעברים: זהה כשהצד השני מחליף תפקיד (למשל, מקורבן שמתלונן לרודף שמאשים).",
+            "אל תגרר: המעבר המהיר נועד (פעמים רבות באופן לא מודע) להוציא אותך משיווי משקל. נשום עמוק והישאר מקורקע.",
+            "שמור על עקביות: הגבולות שלך נשארים זהים, גם אם הטקטיקה שמולך משתנה.",
+            "שקף את הדינמיקה ברוגע: 'אני שם לב שהשיחה עוברת להאשמות הדדיות, בוא נחזור לנושא המקורי'.",
+            "זכור את חוק המשולש: סירוב לשחק את המשחק ועצירת התגובה הדרמטית שלך - תעצור בסופו של דבר את הגלגל כולו."
         ]
     };
 
@@ -868,8 +877,13 @@
         document.getElementById('examples-container').innerHTML = '';
         document.getElementById('chat-input').value = '';
 
+        let roleInstruction = `The user is practicing stepping out of the "${state.role}" role into an Adult state.`;
+        if (state.role === 'combined') {
+            roleInstruction = `The user is practicing staying in the Adult state. You must act as the counterpart and dynamically switch your drama role (Victim, Rescuer, Persecutor) every 1-2 turns. Shift unpredictably between blaming (Persecutor), acting helpless (Victim), or offering unwanted fixing (Rescuer) to pull them into the drama.`;
+        }
+
         state.systemPrompt = `You are a character in a Karpman Drama Triangle communication simulator.
-The user is practicing stepping out of the "${state.role}" role into an Adult state.
+${roleInstruction}
 The context of the relationship is: ${state.context}.
 You will speak in Hebrew. 
 Act naturally as the counterpart character trying to pull the user into the drama.`;
