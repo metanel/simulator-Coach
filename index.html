@@ -27,12 +27,25 @@
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
             font-size: var(--font-base);
-            height: 100vh;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #app {
+            height: 100%;
+            width: 100%;
             display: flex;
             flex-direction: column;
         }
@@ -67,14 +80,17 @@
 
         .screen {
             display: none;
+            flex: 1;
             flex-direction: column;
             height: 100%;
+            max-height: 100%;
             width: 100%;
             max-width: 428px;
             margin: 0 auto;
             background: var(--surface);
             position: relative;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            overflow: hidden;
         }
 
         .screen.active {
@@ -105,6 +121,7 @@
             margin-bottom: 16px;
             width: 100%;
             border: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
@@ -133,10 +150,12 @@
             font-size: 24px;
             margin-bottom: 20px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .form-group {
             margin-bottom: 24px;
+            flex-shrink: 0;
         }
 
         .form-group label {
@@ -165,6 +184,7 @@
             min-height: auto;
             margin-top: 16px;
             font-weight: normal;
+            flex-shrink: 0;
         }
 
         .game-header {
@@ -175,6 +195,7 @@
             border-bottom: 1px solid var(--border);
             gap: 12px;
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .header-top {
@@ -229,7 +250,7 @@
         }
 
         .chat-area {
-            flex: 1;
+            flex: 1 1 0;
             padding: 16px;
             overflow-y: auto;
             display: flex;
@@ -245,6 +266,7 @@
             font-size: 16px;
             line-height: 1.4;
             animation: fadeIn 0.3s ease;
+            flex-shrink: 0;
         }
 
         .message.bot {
@@ -273,6 +295,7 @@
             background: #e0f2fe;
             color: #0369a1;
             border: 1px solid #bae6fd;
+            flex-shrink: 0;
         }
 
         .examples-container {
@@ -282,6 +305,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .example-btn {
@@ -300,6 +324,7 @@
             display: flex;
             gap: 8px;
             border-top: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .input-area input {
@@ -319,6 +344,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .modal-overlay {
@@ -393,12 +419,14 @@
             font-weight: bold;
             margin: 0 auto;
             border: 8px solid #bfdbfe;
+            flex-shrink: 0;
         }
 
         .detail-scores {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .score-item {
@@ -417,6 +445,7 @@
             padding: 16px;
             border-radius: var(--radius);
             border: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .insight-card h4 { margin-bottom: 8px; color: var(--primary); }
@@ -482,7 +511,7 @@
                 <p>בסיום התהליך, קבל דו"ח מפורט על נקודות החוזק ותחומי הצמיחה שלך.</p>
             </div>
 
-            <button class="btn-primary" style="margin-top: auto;" onclick="showScreen('setup-screen')">התחל אימון</button>
+            <button class="btn-primary" style="margin-top: auto; flex-shrink: 0;" onclick="showScreen('setup-screen')">התחל אימון</button>
         </div>
     </div>
 
@@ -512,7 +541,7 @@
                 </select>
             </div>
 
-            <button class="btn-primary" style="margin-top: auto;" onclick="startGame()">התחל סימולציה</button>
+            <button class="btn-primary" style="margin-top: auto; flex-shrink: 0;" onclick="startGame()">התחל סימולציה</button>
             <button class="reset-key-btn" style="align-self: center;" onclick="clearApiKey()">איפוס מפתח API השמור בדפדפן</button>
         </div>
     </div>
@@ -571,7 +600,7 @@
 
     <div id="analysis-screen" class="screen">
         <div class="analysis-container">
-            <h2 style="text-align: center;">סיכום אימון</h2>
+            <h2 style="text-align: center; flex-shrink: 0;">סיכום אימון</h2>
             
             <div id="final-score" class="score-circle">0</div>
             
@@ -614,7 +643,7 @@
                 <p id="analysis-recommendation"></p>
             </div>
 
-            <button class="btn-primary" onclick="resetApp()">אימון נוסף</button>
+            <button class="btn-primary" style="flex-shrink: 0;" onclick="resetApp()">אימון נוסף</button>
         </div>
     </div>
 
