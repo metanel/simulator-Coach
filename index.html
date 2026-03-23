@@ -28,7 +28,7 @@
         }
 
         html, body {
-            height: 100%;
+            height: 100dvh;
             width: 100%;
             margin: 0;
             padding: 0;
@@ -61,13 +61,18 @@
             padding: 12px 20px;
         }
 
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background-color: var(--primary);
             color: white;
             width: 100%;
         }
 
-        .btn-primary:active {
+        .btn-primary:active:not(:disabled) {
             background-color: var(--primary-dark);
         }
 
@@ -347,6 +352,10 @@
             font-size: 16px;
         }
 
+        .input-area input:disabled {
+            background-color: var(--bg-color);
+        }
+
         .send-btn {
             width: 44px;
             height: 44px;
@@ -384,6 +393,7 @@
         .modal-box.large-modal {
             height: 85%;
             max-height: 800px;
+            overflow-y: auto;
         }
 
         .tip-content, .context-content {
@@ -413,7 +423,7 @@
             margin-bottom: 8px;
         }
         
-        .book-content ul {
+        .book-content ul, .book-content ol {
             padding-right: 20px;
             margin-bottom: 16px;
         }
@@ -517,6 +527,15 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        @media (max-height: 500px) {
+            .modal-box {
+                height: 95%;
+                padding: 16px;
+            }
+            .modal-box.large-modal {
+                height: 95%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -561,7 +580,7 @@
             <h2>הגדרת סימולציה</h2>
             
             <div class="form-group">
-                <label>בחר תפקיד (האתגר שמולך):</label>
+                <label>בחר את התפקיד שהדמות תשחק (האתגר שמולך):</label>
                 <select id="role-select">
                     <option value="persecutor">רודף (Persecutor)</option>
                     <option value="rescuer">מציל (Rescuer)</option>
@@ -799,6 +818,13 @@
         } else {
             showScreen('api-key-screen');
         }
+        
+        const chatInput = document.getElementById('chat-input');
+        if (chatInput) {
+            chatInput.addEventListener('focus', () => {
+                setTimeout(scrollToBottom, 300);
+            });
+        }
     });
 
     function saveApiKey() {
@@ -948,6 +974,10 @@
 
     function showLoader(show) {
         document.getElementById('loader').classList.toggle('active', show);
+        document.getElementById('chat-input').disabled = show;
+        
+        const actionButtons = document.querySelectorAll('.send-btn, .example-btn');
+        actionButtons.forEach(btn => btn.disabled = show);
     }
 
     function scrollToBottom() {
@@ -1025,9 +1055,9 @@
         document.getElementById('examples-container').innerHTML = '';
         document.getElementById('chat-input').value = '';
 
-        let roleInstruction = `The user is practicing stepping out of the "${state.role}" role into an Adult state.`;
+        let roleInstruction = `You must strictly play the "${state.role}" role. The user is practicing communicating from an Adult state while you act as the ${state.role} and try to pull them into drama.`;
         if (state.role === 'combined') {
-            roleInstruction = `The user is practicing staying in the Adult state. You must act as the counterpart and dynamically switch your drama role (Victim, Rescuer, Persecutor) every 1-2 turns. Shift unpredictably between blaming (Persecutor), acting helpless (Victim), or offering unwanted fixing (Rescuer) to pull them into the drama.`;
+            roleInstruction = `You must act as the counterpart and dynamically switch your drama role (Victim, Rescuer, Persecutor) every 1-2 turns. The user is practicing staying in the Adult state. Shift unpredictably between blaming (Persecutor), acting helpless (Victim), or offering unwanted fixing (Rescuer) to pull them into the drama.`;
         }
         
         const genderPrompt = state.gender === 'male' ? "man" : "woman";
@@ -1062,10 +1092,12 @@ Return ONLY a JSON object with this structure:
         const res = await callOpenAI(messages);
         showLoader(false);
 
-        if (res) {
+        if (res && res.message && Array.isArray(res.examples)) {
             appendMessage('bot', res.message);
             state.chatHistory.push({ role: 'assistant', content: res.message });
             renderExamples(res.examples);
+        } else {
+            alert("התקבלה תשובה לא תקינה מהשרת בהתנעת המשחק. נסה שוב.");
         }
     }
 
@@ -1077,14 +1109,13 @@ Return ONLY a JSON object with this structure:
         document.getElementById('examples-container').innerHTML = '';
         
         appendMessage('user', inputStr);
-        state.chatHistory.push({ role: 'user', content: inputStr });
         
         state.turnCount++;
         updateTurnCounter();
 
         showLoader(true);
 
-        let roleInstruction = `3. Generate your character's next response to continue the conversation (stay in the ${state.role} role).`;
+        let roleInstruction = `3. Generate your character's next response to continue the conversation. You MUST stay strictly in the ${state.role} role.`;
         if (state.role === 'combined') {
             roleInstruction = `3. IMPORTANT: You are in "combined" mode. You MUST dynamically switch your drama role right now. If your last message was from a Victim perspective, switch to Persecutor or Rescuer. Generate your next response from this NEW drama role to challenge the user.`;
         }
@@ -1109,20 +1140,30 @@ Return ONLY a JSON object with this structure:
   ]
 }`;
 
+        const MAX_HISTORY = 20;
+        const historyToSend = state.chatHistory.slice(-MAX_HISTORY);
+
         const messages = [
             { role: "system", content: state.systemPrompt },
-            ...state.chatHistory,
+            ...historyToSend,
             { role: "user", content: evaluationPrompt }
         ];
 
         const res = await callOpenAI(messages);
         showLoader(false);
 
-        if (res) {
+        if (res && res.next_message && Array.isArray(res.examples)) {
             appendFeedback(res.score, res.feedback || res.analysis);
             appendMessage('bot', res.next_message);
+            
+            state.chatHistory.push({ role: 'user', content: inputStr });
             state.chatHistory.push({ role: 'assistant', content: res.next_message });
+            
             renderExamples(res.examples);
+        } else {
+            alert("התקבלה תשובה לא תקינה מהשרת. אנא נסה לשלוח שוב את הודעתך.");
+            state.turnCount--;
+            updateTurnCounter();
         }
     }
 
@@ -1150,18 +1191,23 @@ Return ONLY a JSON object with this structure (in Hebrew):
   "recommendation": "..."
 }`;
 
+        const MAX_HISTORY = 20;
+        const historyToSend = state.chatHistory.slice(-MAX_HISTORY);
+
         const messages = [
             { role: "system", content: state.systemPrompt },
-            ...state.chatHistory,
+            ...historyToSend,
             { role: "user", content: prompt }
         ];
 
         const res = await callOpenAI(messages);
         showLoader(false);
 
-        if (res) {
+        if (res && res.scores) {
             populateAnalysis(res);
             showScreen('analysis-screen');
+        } else {
+            alert("שגיאה ביצירת סיכום. אנא נסה שוב.");
         }
     }
 
